@@ -1,0 +1,132 @@
+# ====================================================================
+# Git Ignore Configuration: EnterpriseManagement
+# (.NET 10, C#, Visual Studio, Angular 21, Node.js, PrimeNG, Windows)
+# ====================================================================
+
+# --------------------------------------------------------------------
+# .NET Core, Visual Studio, JetBrains Rider
+# --------------------------------------------------------------------
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+[Tt]est[Rr]esults/
+.vs/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+*.userprefs
+*.DotSettings.user
+_ReSharper*/
+*.resharper
+.idea/
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Aa]rms/
+[Aa]rm64/
+bld/
+[Bb]uild/
+
+# Publish output
+publish/
+*.azurePubxml
+*.pubxml
+*.publishproj
+
+# EF Core & Migration artifacts (temporary)
+*.log
+*.sqlite
+*.sqlite3
+*.db
+
+# SQL Server local database files
+*.mdf
+*.ldf
+*.ndf
+
+# Local appsettings & developer secrets
+appsettings.Development.local.json
+appsettings.local.json
+appsettings.*.local.json
+
+# --------------------------------------------------------------------
+# Node.js, Angular, PrimeNG
+# --------------------------------------------------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Angular build artifacts
+.angular/
+dist/
+tmp/
+out-tsc/
+bazel-out/
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# TypeScript compiler cache & declaration map
+*.tsbuildinfo
+
+# --------------------------------------------------------------------
+# Environment Variables & Sensitive Credentials
+# --------------------------------------------------------------------
+.env
+.env.local
+.env.*.local
+*.pfx
+*.p12
+*.pem
+*.key
+*.cer
+*.crt
+secrets.json
+
+# --------------------------------------------------------------------
+# Operating System & Editor Files
+# --------------------------------------------------------------------
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+*~
+.directory
+
+# --------------------------------------------------------------------
+# Never ignore documentation, references, and seed assets
+# --------------------------------------------------------------------
+!Docs/Design/References/*.jpg
+!Docs/Design/References/*.png
+!Docs/**/*.md
+!AGENTS.md
+!README.md
+
