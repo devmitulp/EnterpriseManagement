@@ -1,0 +1,3 @@
+{
+  "angular.inlayHints.parameterHints.suppressWhenArgumentMatchesName": true
+}

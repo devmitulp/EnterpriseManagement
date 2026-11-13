@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="EnterpriseManagement.API/EnterpriseManagement.API.csproj" />
+  <Project Path="EnterpriseManagement.Application/EnterpriseManagement.Application.csproj" />
+  <Project Path="EnterpriseManagement.Domain/EnterpriseManagement.Domain.csproj" />
+  <Project Path="EnterpriseManagement.Infrastructure/EnterpriseManagement.Infrastructure.csproj" />
+  <Project Path="EnterpriseManagement.Persistence/EnterpriseManagement.Persistence.csproj" />
+</Solution>

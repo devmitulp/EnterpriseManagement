@@ -68,33 +68,41 @@ The technology stack for **EnterpriseManagement** is chosen to satisfy the requi
 
 ## 3. Detailed Backend Architecture Stack
 
-### 3.1 .NET 10 & ASP.NET Core Web API
-- **High-Performance HTTP Pipeline**: Minimal allocations, built-in dependency injection, and native AOT-readiness.
-- **Clean Architecture Projects**:
+### 3.1 Clean Architecture Projects & Central Package Management
+- **Five Decoupled Projects**:
   - `EnterpriseManagement.Domain`: Zero dependencies.
-  - `EnterpriseManagement.Application`: Depends on Domain; houses service interfaces, DTOs, and FluentValidation rules.
-  - `EnterpriseManagement.Infrastructure`: Depends on Application and Domain; houses EF Core `DbContext`, entity configurations, XML localizer, and OpenAI proxy.
-  - `EnterpriseManagement.API`: Web entry point, controllers, middleware, and OpenAPI documentation.
+  - `EnterpriseManagement.Application`: Depends on Domain; houses service contracts, repository interfaces, DTOs, FluentValidation rules, assembly marker `IApplicationMarker`, and XML resource files.
+  - `EnterpriseManagement.Persistence`: Depends on Application and Domain; houses EF Core `DbContext`, entity configurations, migrations, and repository implementations.
+  - `EnterpriseManagement.Infrastructure`: Depends on Application and Domain; houses main service implementations, XML localization engine, and external integrations.
+  - `EnterpriseManagement.API`: Depends on Application, Persistence, and Infrastructure; composition root, middleware, and OpenAPI endpoints.
+- **Central Package Management (CPM)**:
+  - Governed via `Backend/Directory.Packages.props` with `<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>`.
+  - Guarantees package version consistency across all projects; prevents transitive version drift.
+  - Enforces that all Entity Framework Core packages (`Microsoft.EntityFrameworkCore.SqlServer`, `Microsoft.EntityFrameworkCore.Design`, etc.) share the identical compatible version family.
 
 ### 3.2 Entity Framework Core 10 (Code-First)
 - **Traditional Repository & Service Pattern**:
   - Rejection of CQRS/MediatR in favor of maintainable application services (`IProjectService`, `IInvoiceService`) and repositories.
-  - `IUnitOfWork` guarantees transactional consistency across multi-entity persistence operations.
+  - Focused repository contracts (`IRepository<TEntity, TId>`) and `IUnitOfWork` guarantee transactional consistency across multi-entity persistence operations without redundant abstractions.
 - **Isolated Configuration Classes**:
-  - Every entity maps to a dedicated `IEntityTypeConfiguration<TEntity>` file in `EnterpriseManagement.Infrastructure/Data/Configurations/`.
+  - Every entity maps to a dedicated `IEntityTypeConfiguration<TEntity>` file in `EnterpriseManagement.Persistence/Configurations/`.
   - Automatic discovery via `modelBuilder.ApplyConfigurationsFromAssembly(...)`.
   - Explicit decimal precision (`18, 2`) configured for all currency fields.
   - Foreign key deletion configured to `DeleteBehavior.Restrict` by default.
 
 ### 3.3 XML-Based Resource Localization (.xml)
-- **ASP.NET Zero Pattern**: Avoids legacy `.resx` files; uses human-readable, source-controllable `.xml` files organized by culture in `Infrastructure/Localization/Resources/`:
-  - `EnterpriseManagement-en.xml` (Default)
-  - `EnterpriseManagement-es.xml` (Spanish)
-  - `EnterpriseManagement-fr.xml` (French)
-  - `EnterpriseManagement-de.xml` (German)
-  - `EnterpriseManagement-ar.xml` (Arabic)
+- **ASP.NET Zero Pattern with Assembly Resource Loading**:
+  - XML files are physically located in `EnterpriseManagement.Application/Localization/Resources/`:
+    - `EnterpriseManagement-en.xml` (Default)
+    - `EnterpriseManagement-es.xml` (Spanish)
+    - `EnterpriseManagement-fr.xml` (French)
+    - `EnterpriseManagement-de.xml` (German)
+    - `EnterpriseManagement-ar.xml` (Arabic)
+  - Configured as Embedded Resources in `Application.csproj`.
+  - `XmlResourceLoader` in `Infrastructure` loads manifest resource streams from the Application assembly via `IApplicationMarker`.
 - **Custom Localizer**: Custom `XmlResourceStringLocalizer` and `XmlResourceStringLocalizerFactory` implementing `IStringLocalizer` and `IStringLocalizerFactory`.
 - **Thread-Safe Caching**: XML strings are parsed at boot into `ConcurrentDictionary<string, string>` structures for sub-millisecond retrieval.
+- **Middleware**: Integrated with ASP.NET Core `UseRequestLocalization()` with supported cultures and default culture fallback.
 
 ### 3.4 FluentValidation
 - Separates validation logic from DTO structures and database entities.

@@ -146,24 +146,25 @@ Only the following five roles are recognized in the system:
 
 ### 3.1 Clean Architecture Strict Layering
 
-The solution is organized into four distinct projects:
+The solution is organized into five distinct projects:
 
-- **`EnterpriseManagement.Domain`**: Core enterprise business entities, value objects, domain exceptions, enums, and repository interfaces. Must have **zero dependencies** on external frameworks or other solution projects.
-- **`EnterpriseManagement.Application`**: Application service interfaces and implementations, Data Transfer Objects (DTOs), FluentValidation validators, business workflows, mapping profiles, and localization interfaces. Depends only on `Domain`.
-- **`EnterpriseManagement.Infrastructure`**: EF Core `DbContext`, entity configuration files (`IEntityTypeConfiguration<T>`), repository implementations, XML localization engine, external service integrations (OpenAI client, email, storage), security token generation, and audit logging. Depends on `Application` and `Domain`.
-- **`EnterpriseManagement.API`**: ASP.NET Core Web API controllers, middleware (exception handling, security headers, rate limiting, localization), request filters, dependency injection composition, and OpenAPI/Swagger configuration. Depends on `Application` and `Infrastructure`.
+- **`EnterpriseManagement.Domain`**: Core enterprise business entities, base entities, value objects, domain exceptions, enums, and business rules. Must have **zero dependencies** on external frameworks or other solution projects.
+- **`EnterpriseManagement.Application`**: Application service interfaces and contracts, Data Transfer Objects (DTOs), FluentValidation validators, business workflows, mapping profiles, and XML localization resource files (`.xml`). Depends only on `Domain`.
+- **`EnterpriseManagement.Persistence`**: EF Core `DbContext`, entity configuration files (`IEntityTypeConfiguration<T>`), EF Core migrations, repository implementations, Unit of Work implementation, database connection configuration, and database DI registration. Depends on `Application` and `Domain`.
+- **`EnterpriseManagement.Infrastructure`**: Main application service implementations, JWT token generation and authentication infrastructure, XML localization engine and resource loader (`XmlResourceStringLocalizer`, `XmlResourceStringLocalizerFactory`), external integrations (OpenAI client, email, storage), and infrastructure DI registration. Depends on `Application` and `Domain`.
+- **`EnterpriseManagement.API`**: ASP.NET Core Web API controllers, middleware (exception handling, security headers, rate limiting, localization), request filters, dependency injection composition root, and OpenAPI/Swagger configuration. Depends on `Application`, `Persistence`, and `Infrastructure`.
 
 ### 3.2 Architectural Pattern: Traditional Service & Repository Pattern
 
 - **CQRS is strictly prohibited.** Do not implement MediatR, command-query separation buses, or event sourcing.
 - Use traditional, type-safe **Service and Repository Patterns** built on top of Entity Framework Core.
-- Data access is mediated through generic repository interfaces (`IRepository<TEntity>`) or dedicated domain repository interfaces (`IInvoiceRepository`, etc.), combined with an `IUnitOfWork` for transactional integrity.
-- Application Services (`IProjectService`, `IInvoiceService`, etc.) orchestrate business logic, validation, authorization checks, and persistence.
+- Data access contracts (`IRepository<TEntity>`, `IUnitOfWork`) reside in `Application`; EF Core implementations reside in `Persistence`.
+- Application Services orchestrate business logic, validation, authorization checks, and persistence. Service contracts reside in `Application`; main service implementations reside in `Infrastructure` as explicitly mandated.
 
 ### 3.3 Database Schema & Entity Framework Core Standards
 
-- **EF Core Code-First Only**: All database schema modifications must be driven exclusively via EF Core Migrations. Direct manual SQL changes to the database outside the migration pipeline are strictly forbidden.
-- **Decoupled Entity Configurations**: Every entity must have its own separate configuration class implementing `IEntityTypeConfiguration<TEntity>`.
+- **EF Core Code-First Only**: All database schema modifications must be driven exclusively via EF Core Migrations in the `Persistence` project. Direct manual SQL changes to the database outside the migration pipeline are strictly forbidden.
+- **Decoupled Entity Configurations**: Every entity must have its own separate configuration class implementing `IEntityTypeConfiguration<TEntity>` located in `Persistence`.
   - Entity-specific Fluent API configurations must **never** be written directly inside `DbContext.OnModelCreating()`.
   - The `DbContext` must call `modelBuilder.ApplyConfigurationsFromAssembly(typeof(ApplicationDbContext).Assembly)`.
 - **Fluent API Mandates**:
@@ -178,8 +179,9 @@ The solution is organized into four distinct projects:
 
 - Localization must follow an **XML-based resource architecture (`.xml`)** inspired by the ASP.NET Zero localization pattern.
 - **`.resx` binary resource files are prohibited.**
-- XML resource files must be organized by culture (e.g., `EnterpriseManagement-en.xml`, `EnterpriseManagement-es.xml`, `EnterpriseManagement-fr.xml`, `EnterpriseManagement-de.xml`, `EnterpriseManagement-ar.xml`).
-- Implement a custom `XmlResourceStringLocalizer` and `XmlResourceStringLocalizerFactory` implementing ASP.NET Core's `IStringLocalizer` and `IStringLocalizerFactory`.
+- XML resource files must be physically maintained inside `EnterpriseManagement.Application/Localization/Resources/` (e.g., `EnterpriseManagement-en.xml`, `EnterpriseManagement-es.xml`).
+- Localization engine, processing logic, resource loader, and custom `XmlResourceStringLocalizer` / `XmlResourceStringLocalizerFactory` reside inside `EnterpriseManagement.Infrastructure`.
+- Infrastructure must load the XML resources from the Application assembly using an explicit, reliable resource-loading mechanism (configured as Embedded Resources in `Application.csproj`).
 - XML localization strings must be parsed at startup, cached in memory, and reloadable.
 - Localized validation messages must integrate seamlessly with FluentValidation.
 

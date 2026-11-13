@@ -89,9 +89,10 @@ EnterpriseManagement/
 ├── .gitignore                             # Comprehensive .NET, Angular, Node, VS gitignore
 ├── Backend/                               # Backend solution root (Scaffolded in Phase 1)
 │   ├── EnterpriseManagement.API/          # Web API Controllers, Filters, Middleware
-│   ├── EnterpriseManagement.Application/  # Services, DTOs, Validators, Localization
+│   ├── EnterpriseManagement.Application/  # Service Interfaces, DTOs, Validators, XML Resources
 │   ├── EnterpriseManagement.Domain/       # Entities, Value Objects, Enums, Exceptions
-│   └── EnterpriseManagement.Infrastructure/# EF Core, Repositories, XML Engine, OpenAI
+│   ├── EnterpriseManagement.Persistence/  # DbContext, Configurations, Migrations, Repositories
+│   └── EnterpriseManagement.Infrastructure/# Main Services, JWT, XML Engine, OpenAI Client
 ├── Frontend/                              # Angular 21 Client root (Scaffolded in Phase 3)
 │   └── src/
 │       ├── app/

@@ -31,14 +31,15 @@
 Enterprise management systems require a high degree of maintainability, testability, and independence from third-party frameworks. We need an architectural foundation that cleanly separates enterprise domain entities from persistence mechanisms, external APIs, and user interfaces.
 
 ### Decision
-We adopt **Clean Architecture** (Uncle Bob) structured into four explicit .NET 10 projects:
-1. `EnterpriseManagement.Domain`: Entities, value objects, domain exceptions, enums, repository interfaces (zero external dependencies).
-2. `EnterpriseManagement.Application`: Service interfaces/implementations, DTOs, FluentValidation, mapping, localization abstractions (depends only on Domain).
-3. `EnterpriseManagement.Infrastructure`: EF Core `DbContext`, entity configurations, repository implementations, XML localizer, OpenAI proxy, JWT token generation (depends on Application and Domain).
-4. `EnterpriseManagement.API`: Web entry point, controllers, middleware, filters, and DI composition root (depends on Application and Infrastructure).
+We adopt **Clean Architecture** (Uncle Bob) structured into five decoupled .NET 10 projects:
+1. `EnterpriseManagement.Domain`: Entities, base entities, value objects, domain exceptions, enums, business rules (zero external dependencies).
+2. `EnterpriseManagement.Application`: Service contracts/interfaces, DTOs, FluentValidation validators, mapping profiles, and XML localization resource files (depends only on Domain).
+3. `EnterpriseManagement.Persistence`: `ApplicationDbContext`, entity configurations (`IEntityTypeConfiguration<TEntity>`), migrations, repository implementations, Unit of Work, database connection configuration (depends on Application and Domain).
+4. `EnterpriseManagement.Infrastructure`: Main service implementations, JWT token generation, XML localization engine and resource loader, external integrations (depends on Application and Domain).
+5. `EnterpriseManagement.API`: Web entry point, controllers, middleware, filters, and DI composition root (depends on Application, Persistence, and Infrastructure).
 
 ### Consequences
-- **Positive**: Strict decoupling of concerns, complete testability of business logic without database dependencies, easily replaceable infrastructure components.
+- **Positive**: Strict decoupling of concerns, complete testability of business logic without database dependencies, clean separation between relational persistence and general infrastructure, easily replaceable components.
 - **Negative**: Requires maintaining explicit DTOs and mapping logic between domain entities and API contracts.
 
 ---
@@ -95,13 +96,14 @@ Traditional .NET `.resx` resource files are binary-wrapped XML, difficult to mer
 
 ### Decision
 We implement an **XML-based Resource Localization architecture (`.xml`)** inspired by the ASP.NET Zero architectural pattern:
-- Localization files stored in `EnterpriseManagement.Infrastructure/Localization/Resources/` (e.g., `EnterpriseManagement-en.xml`, `EnterpriseManagement-es.xml`).
-- Custom `XmlResourceStringLocalizer` and `XmlResourceStringLocalizerFactory` implementing ASP.NET Core's `IStringLocalizer` and `IStringLocalizerFactory`.
-- In-memory thread-safe dictionary caching for sub-millisecond retrieval.
+- Localization resource files (`.xml`) are physically maintained inside `EnterpriseManagement.Application/Localization/Resources/` (e.g., `EnterpriseManagement-en.xml`, `EnterpriseManagement-es.xml`) and configured as Embedded Resources in `Application.csproj`.
+- Custom `XmlResourceStringLocalizer` and `XmlResourceStringLocalizerFactory` reside inside `EnterpriseManagement.Infrastructure`, loading the XML resources from the Application assembly via manifest resource streams.
+- In-memory thread-safe dictionary caching (`ConcurrentDictionary<string, string>`) for sub-millisecond retrieval.
 - FluentValidation and API response messages integrate directly via `IStringLocalizer`.
+- Zero duplication of XML files between Application and Infrastructure.
 
 ### Consequences
-- **Positive**: Plain text XML files easily edited and merged in Git; full compatibility with ASP.NET Core localization abstractions; seamless multi-language expansion.
+- **Positive**: Plain text XML files easily edited and merged in Git; centralized resource maintenance in Application; clean separation from Infrastructure localization parsing logic; full compatibility with ASP.NET Core `IStringLocalizer`.
 - **Negative**: Requires writing and maintaining custom XML parsing and caching classes.
 
 ---

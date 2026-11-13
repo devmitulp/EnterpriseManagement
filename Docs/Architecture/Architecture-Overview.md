@@ -22,29 +22,38 @@ flowchart TD
     subgraph API["EnterpriseManagement.API (ASP.NET Core .NET 10)"]
         CTRL["API Controllers (DTO Contracts)"]
         MW["Middleware (Exception, CORS, Rate Limit, Auth, Security Headers)"]
-        FLT["Validation Filters & Model Binding"]
+        EXT["DI Extensions (Swagger, CORS, HealthChecks)"]
+        COMP["Program.cs (Composition Root)"]
     end
 
     subgraph App["EnterpriseManagement.Application"]
-        SVC["Application Services (Traditional Service Pattern)"]
+        SINT["Service Interfaces & Contracts"]
         VAL["FluentValidation Validators"]
-        DTO["Data Transfer Objects (DTOs) & Mapping"]
-        LOC_INT["Localization Interfaces (IStringLocalizer)"]
+        DTO["Data Transfer Objects (DTOs) & Mapping Profiles"]
+        XML_RES["XML Resource Files (.xml Embedded Resources)"]
+        RINT["Repository & Unit of Work Interfaces"]
     end
 
     subgraph Dom["EnterpriseManagement.Domain"]
-        ENT["Enterprise Entities & Value Objects"]
-        IREP["Repository & Unit of Work Interfaces"]
-        EXC["Domain Exceptions & Enums"]
+        ENT["Enterprise Entities & Base Entities"]
+        VO["Value Objects & Domain Enums"]
+        EXC["Domain Exceptions & Business Rules"]
+    end
+
+    subgraph Persist["EnterpriseManagement.Persistence"]
+        DBC["ApplicationDbContext (EF Core 10)"]
+        CFG["IEntityTypeConfiguration<T> (Fluent API Mappings)"]
+        REP["Repository & Unit of Work Implementations"]
+        MIG["EF Core Code-First Migrations"]
+        PDI["AddPersistenceServices()"]
     end
 
     subgraph Infra["EnterpriseManagement.Infrastructure"]
-        DBC["ApplicationDbContext (EF Core 10)"]
-        CFG["IEntityTypeConfiguration<T> (Fluent API Mappings)"]
-        REP["Generic & Custom Repository Implementations"]
-        XLOC["XML Resource Localization Engine (.xml)"]
-        AI_SVC["OpenAI Proxy Service (Server-Side Client)"]
+        SVC["Main Service Implementations"]
+        XLOC["XML Localization Engine & Loader"]
         TOK["JWT Token Generator & Identity Services"]
+        AI_SVC["OpenAI Proxy Service (Server-Side Client)"]
+        IDI["AddInfrastructureServices()"]
     end
 
     subgraph Storage["Enterprise Persistence & External Services"]
@@ -56,21 +65,23 @@ flowchart TD
     SIG --> INT
     INT -->|HTTPS / JSON / JWT| MW
     MW --> CTRL
-    CTRL --> SVC
-    SVC --> VAL
-    SVC --> IREP
-    SVC --> LOC_INT
-    REP -.->|Implements| IREP
-    XLOC -.->|Implements| LOC_INT
+    CTRL --> SINT
+    SVC -.->|Implements| SINT
+    SVC --> RINT
+    REP -.->|Implements| RINT
     REP --> DBC
     DBC --> CFG
     DBC --> SQL
+    XLOC -.->|Loads Embedded XML| XML_RES
     AI_SVC -->|HTTPS / TLS 1.3| OAI
     SVC --> AI_SVC
     App --> Dom
-    Infra --> Dom
+    Persist --> App
+    Persist --> Dom
     Infra --> App
+    Infra --> Dom
     API --> App
+    API --> Persist
     API --> Infra
 ```
 
@@ -78,40 +89,55 @@ flowchart TD
 
 ## 2. Backend Clean Architecture Layers (.NET 10)
 
-The backend is strictly divided into four decoupled projects:
+The backend is strictly organized into five decoupled projects, utilizing an **approved architectural variation** where application service contracts reside in `Application` while their concrete implementations reside in `Infrastructure`:
 
 ### 2.1 `EnterpriseManagement.Domain`
-- **Core Business Layer**: Contains enterprise domain entities, value objects, domain-level enums, domain exception types, and repository interfaces.
-- **Dependencies**: Zero external NuGet packages or project dependencies (pure C#).
+- **Core Business Layer**: Contains enterprise domain entities, base entities, value objects, domain-level enums, business rules, and domain exception types.
+- **Dependencies**: Zero external NuGet packages or project dependencies (pure C# .NET 10).
 - **Entities**: Includes `User`, `Role`, `Employee`, `Department`, `Project`, `TaskItem`, `Invoice`, `InvoiceItem`, `Payment`, `AuditLog`.
 
 ### 2.2 `EnterpriseManagement.Application`
-- **Orchestration & Business Logic Layer**: Coordinates business workflows, enforces validation rules, maps entities to DTOs, and exposes service contracts.
+- **Application Contracts & Validation Layer**: Houses service interfaces, repository contracts, DTO contracts, mapping profiles, FluentValidation validators, assembly marker `IApplicationMarker`, and XML localization resource files.
 - **Dependencies**: Depends exclusively on `EnterpriseManagement.Domain`.
 - **Key Artifacts**:
-  - Service interfaces and implementations (`IProjectService`, `IInvoiceService`, `IEmployeeService`, etc.).
-  - Strongly-typed Request and Response DTOs.
+  - Service contracts (`IProjectService`, `IInvoiceService`, `IEmployeeService`, etc.).
+  - Repository contracts (`IRepository<T>`, `IUnitOfWork`, `ICurrentUserService`).
+  - Request and Response DTOs.
   - FluentValidation rules classes (`CreateInvoiceDtoValidator`, etc.).
-  - Application exception types and mapping definitions.
+  - Assembly Marker `IApplicationMarker` for reliable reflection and embedded resource discovery.
+  - XML Localization Resource Files (`Application/Localization/Resources/EnterpriseManagement-*.xml`).
+  - Application DI extension (`AddApplicationServices()`).
 
-### 2.3 `EnterpriseManagement.Infrastructure`
-- **Technical Capabilities & Persistence Layer**: Implements abstractions defined in `Domain` and `Application`.
+### 2.3 `EnterpriseManagement.Persistence`
+- **Relational Persistence Layer**: Implements database persistence, EF Core configurations, migrations, and database connection lifecycle.
 - **Dependencies**: Depends on `Application` and `Domain`.
 - **Key Artifacts**:
-  - `ApplicationDbContext` managing EF Core 10 mappings.
-  - Dedicated `IEntityTypeConfiguration<TEntity>` classes for each database entity.
-  - Repository implementations (`Repository<TEntity>`, `UnitOfWork`).
-  - Custom XML-based localization engine (`XmlResourceStringLocalizer`).
-  - OpenAI proxy integration client with schema validation and rate limiting.
-  - JWT token generation, password hashing, and security audit loggers.
+  - `ApplicationDbContext` managing EF Core 10 mappings and automatic UTC timestamp handling.
+  - Isolated `IEntityTypeConfiguration<TEntity>` classes for each database entity.
+  - EF Core Migrations pipeline.
+  - Practical repository implementations (`Repository<T>`, `UnitOfWork`).
+  - Persistence DI extension (`AddPersistenceServices(IConfiguration)`).
 
-### 2.4 `EnterpriseManagement.API`
-- **Presentation & Web Entry Point Layer**: Configures ASP.NET Core host, routing, HTTP middleware pipeline, dependency injection wiring, and controllers.
-- **Dependencies**: Depends on `Application` and `Infrastructure` (for DI composition root).
+### 2.4 `EnterpriseManagement.Infrastructure`
+- **Service Implementation & Cross-Cutting Infrastructure Layer**: Implements main application services, security tokens, XML localization engine, and external integrations.
+- **Dependencies**: Depends on `Application` and `Domain`.
+- **Approved Architectural Variation**: In standard Clean Architecture, application services often reside inside `Application`. In this project, by approved architectural decision, main service implementations reside in `Infrastructure`, keeping `Application` purely contractual and free of implementation overhead.
 - **Key Artifacts**:
-  - Thin API controllers returning standard `ApiResponse<T>` envelopes.
-  - Global exception handling middleware converting domain/validation exceptions into standardized Problem Details JSON.
-  - CORS, Rate Limiting, and Security Headers middleware.
+  - Main service implementations (`ProjectService`, `InvoiceService`, `EmployeeService`, etc.) fulfilling application contracts.
+  - JWT token generation service and authentication infrastructure.
+  - Custom XML-based localization engine (`XmlResourceStringLocalizer`, `XmlResourceStringLocalizerFactory`) loading embedded XML resources from the Application assembly via `IApplicationMarker`.
+  - OpenAI proxy integration client with schema validation and rate limiting.
+  - Infrastructure DI extension (`AddInfrastructureServices(IConfiguration)`).
+
+### 2.5 `EnterpriseManagement.API`
+- **Presentation & Web Entry Point Layer**: Configures ASP.NET Core host, routing, HTTP middleware pipeline, modular dependency injection extensions, controllers, and composition root.
+- **Dependencies**: Depends on `Application`, `Persistence`, and `Infrastructure`.
+- **Key Artifacts**:
+  - Thin API controllers (`BaseApiController`) returning standard `ApiResponse<T>` envelopes.
+  - Global exception handling middleware converting domain/validation exceptions into standardized RFC 7807 Problem Details JSON.
+  - Modular API extensions (`AddSwaggerServices()`, `AddCorsServices()`, `AddHealthCheckServices()`).
+  - Standard ASP.NET Core health check endpoint mapping (`app.MapHealthChecks("/health")`) for liveness/readiness, eliminating duplicate controller wrappers.
+  - Clean `Program.cs` composition root.
 
 ---
 
@@ -120,11 +146,11 @@ The backend is strictly divided into four decoupled projects:
 ### 3.1 Architectural Mandate
 The system strictly enforces the **Traditional Service and Repository Pattern**. The **CQRS (Command Query Responsibility Segregation)** pattern—including MediatR, command/query dispatchers, and event sourcing—is **strictly prohibited**.
 
-### 3.2 Justification for Single-Organization Scope
-1. **Unnecessary Complexity**: For a single-organization operational platform, CQRS introduces excessive boilerplate (commands, queries, handlers, notifications, pipelines) without tangible architectural benefit.
-2. **Maintenance Simplicity**: Standard Application Services (`IProjectService`, `IInvoiceService`) provide clear, discoverable, and easily debuggable business transaction boundaries.
-3. **Optimized Read Queries**: EF Core 10 natively supports high-performance projection (`AsNoTracking()`, `.Select(...)`) directly through repository methods without requiring separate query stacks.
-4. **Consistency**: A unified Unit of Work and Repository abstraction ensures transactional consistency across aggregate boundaries.
+### 3.2 Repository & Unit of Work Evaluation
+To avoid unnecessary abstractions while maintaining clean boundaries:
+1. **Lean Repository Pattern**: Rather than an overengineered generic repository with dozens of speculative querying methods or redundant read/write repository splits, we utilize a focused `IRepository<TEntity, TId>` handling essential CRUD, primary key retrieval, and predicate queries.
+2. **Explicit Unit of Work**: An `IUnitOfWork` abstraction provides explicit multi-entity transaction boundaries (`CommitAsync` / `SaveChangesAsync`) across domain operations (e.g., invoice generation paired with payment allocations or project budget decrements).
+3. **Optimized Read Queries**: For complex read projections, repositories expose queryable or projected DTO methods leveraging EF Core's native `AsNoTracking()`.
 
 ---
 
@@ -157,20 +183,21 @@ Every entity in the database must have its own isolated configuration class impl
   builder.HasIndex(e => e.IssueDate);
   ```
 
-### 4.3 EF Core Migration Lifecycle
-1. **Code-First Schema Changes**: Developers modify domain entity classes and corresponding `IEntityTypeConfiguration<TEntity>` files.
-2. **Migration Generation**: Migrations are generated via dotnet CLI:
+### 4.3 Environment-Driven Database Configuration & EF Core Migration Lifecycle
+- **Environment-Driven Configuration**: Database connection strings are managed strictly through ASP.NET Core configuration providers (`ConnectionStrings:DefaultConnection` in `appsettings.json`, environment variables, or User Secrets). The system does not hardcode or assume a specific local database instance (e.g., LocalDB vs SQL Server Developer vs Azure SQL). Real database credentials and secrets are never committed to source control.
+- **Code-First Schema Changes**: Developers modify domain entity classes and corresponding `IEntityTypeConfiguration<TEntity>` files in `EnterpriseManagement.Persistence`.
+- **Migration Generation**: Migrations are generated via dotnet CLI hosted by the API startup project:
    ```bash
-   dotnet ef migrations add <DescriptiveMigrationName> --project EnterpriseManagement.Infrastructure --startup-project EnterpriseManagement.API
+   dotnet ef migrations add <DescriptiveMigrationName> --project EnterpriseManagement.Persistence --startup-project EnterpriseManagement.API
    ```
-3. **Migration Review**: The generated migration script is inspected for breaking changes or unintended index drops.
-4. **Deployment Scripting**: For staging and production, idempotent SQL scripts are generated:
+- **Migration Review**: The generated migration script is inspected for breaking changes or unintended index drops.
+- **Deployment Scripting**: For staging and production, idempotent SQL scripts are generated:
    ```bash
-   dotnet ef migrations script --idempotent --output Database/Scripts/Deploy.sql
+   dotnet ef migrations script --idempotent --project EnterpriseManagement.Persistence --startup-project EnterpriseManagement.API --output Database/Scripts/Deploy.sql
    ```
-5. **Rollback Strategy**: Migrations support clean down-migrations:
+- **Rollback Strategy**: Migrations support clean down-migrations:
    ```bash
-   dotnet ef database update <PreviousMigrationName>
+   dotnet ef database update <PreviousMigrationName> --project EnterpriseManagement.Persistence --startup-project EnterpriseManagement.API
    ```
 
 ---
@@ -192,19 +219,29 @@ Instead of binary `.resx` files, localization resources are stored in structured
 </localizationDictionary>
 ```
 
-### 5.2 Implementation Engine
-- **Resource Directory**: `EnterpriseManagement.Infrastructure/Localization/Resources/`:
+### 5.2 Implementation Engine & Assembly Resource Loading
+- **Resource Physical Directory**: Maintained inside `EnterpriseManagement.Application/Localization/Resources/`:
   - `EnterpriseManagement-en.xml` (Default Culture)
   - `EnterpriseManagement-es.xml` (Spanish)
   - `EnterpriseManagement-fr.xml` (French)
   - `EnterpriseManagement-de.xml` (German)
   - `EnterpriseManagement-ar.xml` (Arabic - RTL)
-- **`XmlResourceStringLocalizer`**: Custom class implementing `IStringLocalizer`. Parses XML files at startup into concurrent thread-safe dictionaries.
-- **`XmlResourceStringLocalizerFactory`**: Custom factory implementing `IStringLocalizerFactory`.
+- **Assembly Resource Loading**:
+  - Configured as Embedded Resources in `EnterpriseManagement.Application.csproj` (`<EmbeddedResource Include="Localization\Resources\*.xml" />`).
+  - An explicit assembly marker interface `IApplicationMarker` is declared in `EnterpriseManagement.Application`. The localization engine in `EnterpriseManagement.Infrastructure` loads the XML streams directly from the Application assembly via `typeof(IApplicationMarker).Assembly.GetManifestResourceStream(...)`.
+  - Embedded resource manifest names follow the deterministic format: `EnterpriseManagement.Application.Localization.Resources.EnterpriseManagement-{culture}.xml`.
+  - Zero XML file duplication between projects.
+- **Engine Architecture (in Infrastructure)**:
+  - `XmlResourceStringLocalizer`: Implements `IStringLocalizer`. Parses XML streams into thread-safe concurrent dictionaries (`ConcurrentDictionary<string, string>`) for high-throughput lookup.
+  - `XmlResourceStringLocalizerFactory`: Implements `IStringLocalizerFactory` and discovers resources from the Application assembly.
+- **Request Localization Middleware Pipeline**:
+  - In `Program.cs`, ASP.NET Core `app.UseRequestLocalization()` is configured with `RequestLocalizationOptions`:
+    - Supported cultures: `en`, `es`, `fr`, `de`, `ar`.
+    - Default request culture: `en`.
+    - Request culture providers: `QueryStringRequestCultureProvider`, `CookieRequestCultureProvider`, `AcceptLanguageHeaderRequestCultureProvider`.
 - **Integration**:
-  - Seamlessly injected into Application Services and Controllers via `IStringLocalizer<T>`.
+  - Injected into Services and Controllers via ASP.NET Core's standard `IStringLocalizer` and `IStringLocalizer<T>`.
   - FluentValidation error messages resolve localization keys dynamically based on request culture.
-  - The request culture is resolved via `Accept-Language` headers, query strings, or user preference cookies.
 
 ---
 
