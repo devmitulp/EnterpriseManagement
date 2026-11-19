@@ -10,11 +10,11 @@ Enterprise-grade frontend application for the **EnterpriseManagement** platform,
 - **Architecture**: Standalone Components (`bootstrapApplication`, no `NgModule`) with Feature-Based Public/Private separation.
 - **Primary UI Library**: PrimeNG `21.1.10` with official PrimeUIX Themes (`@primeuix/themes` `^2.0.3`) aligned via `darkModeSelector: '[data-theme="dark"]'`.
 - **Global Design System**: Centralized design tokens and SCSS partials (`_variables.scss`, `_themes.scss`, `_typography.scss`, `_mixins.scss`, `_utilities.scss`).
-- **Layout & Grid**: Bootstrap `5.3.9` (strictly limited to grid, flex, and layout utilities; zero component styles or JavaScript).
-- **Data Visualization**: Chart.js `4.6.1` (direct native HTML Canvas integration; `ng2-charts` `10.0.0` reserved for future optional integration).
+- **Layout & Grid**: Bootstrap `5.3.9` (strictly limited to grid, flex, spacing, and layout utilities; component styles, tables, buttons, cards, and JavaScript are strictly omitted to prevent conflicts with PrimeNG).
+- **Data Visualization**: Chart.js `4.6.1` (strictly direct native HTML5 Canvas API integration; third-party wrapper components such as `ng2-charts` or PrimeNG `p-chart` are prohibited).
 - **Primary Icon Library**: Font Awesome (`@fortawesome/angular-fontawesome` `~4.0.0`, `@fortawesome/fontawesome-svg-core` `^7.3.1`, `@fortawesome/free-solid-svg-icons` `^7.3.1`).
-- **Secondary Icon Library**: PrimeIcons (`primeicons` `^8.0.2`, optional & subordinate).
-- **Language**: TypeScript 5.9+ in strict mode (`"strict": true`) with configured path aliases (`@core/*`, `@shared/*`, `@layout/*`, `@features/*`, `@env/*`, `@styles/*`).
+- **Secondary Icon Library**: PrimeIcons (`primeicons` `^8.0.2`, optional & subordinate to Font Awesome).
+- **Language**: TypeScript 5.9+ in strict mode (`"strict": true`) with configured path aliases (`@core/*`, `@shared/*`, `@layout/*`, `@features/*`, `@env/*`).
 - **Styling**: SCSS (`inlineStyleLanguage: "scss"`).
 - **Routing**: Angular Router with standalone route trees.
 - **Forms**: Strictly typed Reactive Forms (`@angular/forms`, template-driven forms prohibited).
@@ -400,3 +400,9 @@ body {
 2. Run `npm run lint` to verify TypeScript and template compliance.
 3. Run `npm run format:check` or `npm run format` to ensure uniform code style.
 4. Run `npm test` and `npm run build` before pushing changes.
+
+### 9.4 Known Dependency Security & Audit Baseline
+
+- **Production Dependencies (`npm audit --omit=dev`)**: Production dependency audit reports zero vulnerabilities.
+- **Development Tooling (`npm audit`)**: 19 moderate advisories inherent to `@angular/cli@21.2.30`'s transitive dependency chain (`pacote` -> `glob` GHSA-3g3m-2fjr-6pw4 / `minimatch` GHSA-g3hv-75wg-m249).
+- **Remediation Policy**: In accordance with enterprise architectural governance, `npm audit fix --force` is strictly forbidden because it triggers a breaking major upgrade to Angular 22 (`@angular/cli@22.3.0`). This development-only risk is accepted until upstream patch releases are made available for Angular 21.
