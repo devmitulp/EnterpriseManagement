@@ -12,6 +12,7 @@
   "private": true,
   "packageManager": "npm@11.16.0",
   "dependencies": {
+    "@angular/cdk": "^21.2.14",
     "@angular/common": "^21.2.0",
     "@angular/compiler": "^21.2.0",
     "@angular/core": "^21.2.0",
@@ -21,7 +22,12 @@
     "@fortawesome/angular-fontawesome": "~4.0.0",
     "@fortawesome/fontawesome-svg-core": "^7.3.1",
     "@fortawesome/free-solid-svg-icons": "^7.3.1",
+    "@primeuix/themes": "^2.0.3",
+    "bootstrap": "^5.3.9",
+    "chart.js": "^4.6.1",
+    "ng2-charts": "^10.0.0",
     "primeicons": "^8.0.2",
+    "primeng": "^21.1.10",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },

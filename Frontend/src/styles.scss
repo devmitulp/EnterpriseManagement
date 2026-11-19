@@ -1,1 +1,19 @@
-/* You can add global styles to this file, and also import other style files */
+// -----------------------------------------------------------------------------
+// EnterpriseManagement — Global Stylesheet
+// -----------------------------------------------------------------------------
+
+// 1. PrimeIcons (Secondary Icon Library)
+@use 'primeicons/primeicons.css';
+
+// 2. Bootstrap 5 (Selective Grid, Flex & Layout Utilities only)
+// Note: Component styles (buttons, cards, forms, tables) are omitted to prevent collision with PrimeNG.
+@use 'bootstrap/dist/css/bootstrap-grid.min.css';
+@use 'bootstrap/dist/css/bootstrap-utilities.min.css';
+
+// 3. Application Global Styles
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
