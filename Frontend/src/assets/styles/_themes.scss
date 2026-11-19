@@ -1,0 +1,159 @@
+// -----------------------------------------------------------------------------
+// EnterpriseManagement Design System — Theme Definitions
+// -----------------------------------------------------------------------------
+
+// =============================================================================
+// Shared Base Design Tokens (Static across themes)
+// =============================================================================
+:root {
+  --em-layout-sidebar-width: 260px;
+  --em-layout-sidebar-collapsed-width: 72px;
+  --em-layout-header-height: 64px;
+  --em-layout-footer-height: 48px;
+  --em-layout-max-width: 1440px;
+}
+
+// =============================================================================
+// Light Theme (Default)
+// =============================================================================
+:root,
+[data-theme='light'] {
+  // Brand Colors
+  --em-color-primary: #2563eb;
+  --em-color-primary-hover: #1d4ed8;
+  --em-color-primary-active: #1e40af;
+  --em-color-primary-light: #eff6ff;
+  --em-color-secondary: #475569;
+  --em-color-secondary-hover: #334155;
+  --em-color-secondary-light: #f1f5f9;
+  --em-color-accent: #0ea5e9;
+  --em-color-accent-light: #f0f9ff;
+
+  // Semantic Colors
+  --em-color-success: #10b981;
+  --em-color-success-hover: #059669;
+  --em-color-success-light: #ecfdf5;
+  --em-color-success-border: #a7f3d0;
+
+  --em-color-warning: #f59e0b;
+  --em-color-warning-hover: #d97706;
+  --em-color-warning-light: #fffbeb;
+  --em-color-warning-border: #fde68a;
+
+  --em-color-danger: #ef4444;
+  --em-color-danger-hover: #dc2626;
+  --em-color-danger-light: #fef2f2;
+  --em-color-danger-border: #fecaca;
+
+  --em-color-info: #0284c7;
+  --em-color-info-hover: #0369a1;
+  --em-color-info-light: #f0f9ff;
+  --em-color-info-border: #bae6fd;
+
+  // Background & Surface Colors
+  --em-bg-app: #f8fafc;
+  --em-bg-surface: #ffffff;
+  --em-bg-card: #ffffff;
+  --em-bg-sidebar: #ffffff;
+  --em-bg-header: #ffffff;
+  --em-bg-footer: #ffffff;
+  --em-bg-elevated: #ffffff;
+  --em-bg-input: #ffffff;
+  --em-bg-muted: #f1f5f9;
+  --em-bg-hover: #f1f5f9;
+
+  // Text & Neutral Colors
+  --em-text-primary: #0f172a;
+  --em-text-secondary: #475569;
+  --em-text-muted: #64748b;
+  --em-text-disabled: #94a3b8;
+  --em-text-inverse: #ffffff;
+
+  // Border & Divider Colors
+  --em-border-color: #e2e8f0;
+  --em-border-color-subtle: #f1f5f9;
+  --em-border-color-focus: #3b82f6;
+  --em-divider-color: #e2e8f0;
+
+  // Elevation & Shadows
+  --em-shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --em-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --em-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --em-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --em-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+
+  // Focus Ring
+  --em-focus-ring: 0 0 0 2px #ffffff, 0 0 0 4px #2563eb;
+}
+
+// =============================================================================
+// Dark Theme
+// =============================================================================
+[data-theme='dark'] {
+  // Brand Colors
+  --em-color-primary: #3b82f6;
+  --em-color-primary-hover: #60a5fa;
+  --em-color-primary-active: #2563eb;
+  --em-color-primary-light: rgba(59, 130, 246, 0.15);
+  --em-color-secondary: #94a3b8;
+  --em-color-secondary-hover: #cbd5e1;
+  --em-color-secondary-light: rgba(148, 163, 184, 0.15);
+  --em-color-accent: #38bdf8;
+  --em-color-accent-light: rgba(56, 189, 248, 0.15);
+
+  // Semantic Colors
+  --em-color-success: #34d399;
+  --em-color-success-hover: #10b981;
+  --em-color-success-light: rgba(16, 185, 129, 0.15);
+  --em-color-success-border: #065f46;
+
+  --em-color-warning: #fbbf24;
+  --em-color-warning-hover: #f59e0b;
+  --em-color-warning-light: rgba(245, 158, 11, 0.15);
+  --em-color-warning-border: #78350f;
+
+  --em-color-danger: #f87171;
+  --em-color-danger-hover: #ef4444;
+  --em-color-danger-light: rgba(239, 68, 68, 0.15);
+  --em-color-danger-border: #7f1d1d;
+
+  --em-color-info: #38bdf8;
+  --em-color-info-hover: #0284c7;
+  --em-color-info-light: rgba(2, 132, 199, 0.15);
+  --em-color-info-border: #075985;
+
+  // Background & Surface Colors
+  --em-bg-app: #0f172a;
+  --em-bg-surface: #1e293b;
+  --em-bg-card: #1e293b;
+  --em-bg-sidebar: #1e293b;
+  --em-bg-header: #1e293b;
+  --em-bg-footer: #1e293b;
+  --em-bg-elevated: #334155;
+  --em-bg-input: #0f172a;
+  --em-bg-muted: #334155;
+  --em-bg-hover: #334155;
+
+  // Text & Neutral Colors
+  --em-text-primary: #f8fafc;
+  --em-text-secondary: #cbd5e1;
+  --em-text-muted: #94a3b8;
+  --em-text-disabled: #64748b;
+  --em-text-inverse: #0f172a;
+
+  // Border & Divider Colors
+  --em-border-color: #334155;
+  --em-border-color-subtle: #1e293b;
+  --em-border-color-focus: #60a5fa;
+  --em-divider-color: #334155;
+
+  // Elevation & Shadows
+  --em-shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+  --em-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.5), 0 1px 2px -1px rgba(0, 0, 0, 0.4);
+  --em-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
+  --em-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -4px rgba(0, 0, 0, 0.5);
+  --em-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.7), 0 8px 10px -6px rgba(0, 0, 0, 0.6);
+
+  // Focus Ring
+  --em-focus-ring: 0 0 0 2px #0f172a, 0 0 0 4px #3b82f6;
+}

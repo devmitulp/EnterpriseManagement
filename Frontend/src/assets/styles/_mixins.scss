@@ -1,0 +1,113 @@
+// -----------------------------------------------------------------------------
+// EnterpriseManagement Design System — Mixins
+// -----------------------------------------------------------------------------
+
+@use 'variables' as *;
+
+// 1. Responsive Media Queries
+@mixin respond-to($breakpoint) {
+  @if $breakpoint == 'sm' {
+    @media (min-width: $breakpoint-sm) { @content; }
+  } @else if $breakpoint == 'md' {
+    @media (min-width: $breakpoint-md) { @content; }
+  } @else if $breakpoint == 'lg' {
+    @media (min-width: $breakpoint-lg) { @content; }
+  } @else if $breakpoint == 'xl' {
+    @media (min-width: $breakpoint-xl) { @content; }
+  } @else if $breakpoint == 'xxl' {
+    @media (min-width: $breakpoint-xxl) { @content; }
+  } @else {
+    @media (min-width: $breakpoint) { @content; }
+  }
+}
+
+@mixin respond-below($breakpoint) {
+  @if $breakpoint == 'sm' {
+    @media (max-width: ($breakpoint-sm - 0.02px)) { @content; }
+  } @else if $breakpoint == 'md' {
+    @media (max-width: ($breakpoint-md - 0.02px)) { @content; }
+  } @else if $breakpoint == 'lg' {
+    @media (max-width: ($breakpoint-lg - 0.02px)) { @content; }
+  } @else if $breakpoint == 'xl' {
+    @media (max-width: ($breakpoint-xl - 0.02px)) { @content; }
+  } @else if $breakpoint == 'xxl' {
+    @media (max-width: ($breakpoint-xxl - 0.02px)) { @content; }
+  } @else {
+    @media (max-width: $breakpoint) { @content; }
+  }
+}
+
+// 2. Flexbox Helpers
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+@mixin flex-column {
+  display: flex;
+  flex-direction: column;
+}
+
+// 3. Surface Styles
+@mixin card-surface {
+  background-color: var(--em-bg-card);
+  border: 1px solid var(--em-border-color);
+  border-radius: $radius-lg;
+  box-shadow: var(--em-shadow-sm);
+  transition: box-shadow $transition-fast, border-color $transition-fast;
+}
+
+@mixin elevated-surface {
+  background-color: var(--em-bg-elevated);
+  border: 1px solid var(--em-border-color);
+  border-radius: $radius-xl;
+  box-shadow: var(--em-shadow-md);
+}
+
+// 4. Accessible Focus Ring
+@mixin focus-ring {
+  outline: none;
+  box-shadow: var(--em-focus-ring);
+}
+
+// 5. Text Truncation
+@mixin truncate-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin clamp-lines($lines: 2) {
+  display: -webkit-box;
+  -webkit-line-clamp: $lines;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// 6. Custom Scrollbar
+@mixin custom-scrollbar($width: 6px) {
+  &::-webkit-scrollbar {
+    width: $width;
+    height: $width;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--em-border-color);
+    border-radius: $radius-full;
+
+    &:hover {
+      background: var(--em-text-muted);
+    }
+  }
+}

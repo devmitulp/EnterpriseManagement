@@ -1,0 +1,67 @@
+// -----------------------------------------------------------------------------
+// EnterpriseManagement Design System — Utilities
+// -----------------------------------------------------------------------------
+
+@use 'variables' as *;
+@use 'mixins' as *;
+
+// 1. Core Surfaces
+.em-bg-app {
+  background-color: var(--em-bg-app) !important;
+}
+
+.em-surface-card {
+  @include card-surface;
+}
+
+.em-surface-elevated {
+  @include elevated-surface;
+}
+
+// 2. Semantic Text Colors
+.em-text-primary {
+  color: var(--em-text-primary) !important;
+}
+
+.em-text-secondary {
+  color: var(--em-text-secondary) !important;
+}
+
+.em-text-muted {
+  color: var(--em-text-muted) !important;
+}
+
+// 3. Borders & Dividers
+.em-border {
+  border: 1px solid var(--em-border-color) !important;
+}
+
+.em-divider {
+  border: 0;
+  border-top: 1px solid var(--em-divider-color);
+  margin: $spacing-4 0;
+}
+
+// 4. Layout Helpers
+.em-container {
+  width: 100%;
+  max-width: var(--em-layout-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: $spacing-4;
+  padding-right: $spacing-4;
+
+  @include respond-to('md') {
+    padding-left: $spacing-6;
+    padding-right: $spacing-6;
+  }
+}
+
+.em-scrollable {
+  @include custom-scrollbar;
+  overflow-y: auto;
+}
+
+.em-truncate {
+  @include truncate-text;
+}

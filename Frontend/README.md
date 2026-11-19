@@ -7,245 +7,296 @@ Enterprise-grade frontend application for the **EnterpriseManagement** platform,
 ## 1. Architecture & Technology Foundation
 
 - **Framework**: Angular 21 (`@angular/core` `^21.2.0`, `@angular/cdk` `^21.2.14`)
-- **Architecture**: Standalone Components (`bootstrapApplication`, no `NgModule`)
-- **Primary UI Library**: PrimeNG `21.1.10` with official PrimeUIX Themes (`@primeuix/themes` `^2.0.3`)
-- **Layout & Grid**: Bootstrap `5.3.9` (strictly limited to grid, flex, and layout utilities; no component styles or JS)
-- **Data Visualization**: Chart.js `4.6.1` (direct native HTML Canvas integration; `ng2-charts` `10.0.0` reserved for future optional integration)
-- **Primary Icon Library**: Font Awesome (`@fortawesome/angular-fontawesome` `~4.0.0`, `@fortawesome/fontawesome-svg-core` `^7.3.1`, `@fortawesome/free-solid-svg-icons` `^7.3.1`)
-- **Secondary Icon Library**: PrimeIcons (`primeicons` `^8.0.2`, optional & subordinate)
-- **Language**: TypeScript 5.9+ in strict mode (`"strict": true`)
-- **Styling**: SCSS (`inlineStyleLanguage: "scss"`)
-- **Routing**: Angular Router with standalone route trees
-- **Forms**: Strictly typed Reactive Forms (`@angular/forms`, template-driven forms prohibited)
-- **State & Reactivity**: Angular Signals (`signal`, `computed`, `effect`) & RxJS 7.8+
-- **Server-Side Rendering (SSR)**: Explicitly disabled (client-side enterprise SPA)
-- **Package Manager**: `npm` with reproducible lockfile (`package-lock.json`)
+- **Architecture**: Standalone Components (`bootstrapApplication`, no `NgModule`) with Feature-Based Public/Private separation.
+- **Primary UI Library**: PrimeNG `21.1.10` with official PrimeUIX Themes (`@primeuix/themes` `^2.0.3`) aligned via `darkModeSelector: '[data-theme="dark"]'`.
+- **Global Design System**: Centralized design tokens and SCSS partials (`_variables.scss`, `_themes.scss`, `_typography.scss`, `_mixins.scss`, `_utilities.scss`).
+- **Layout & Grid**: Bootstrap `5.3.9` (strictly limited to grid, flex, and layout utilities; zero component styles or JavaScript).
+- **Data Visualization**: Chart.js `4.6.1` (direct native HTML Canvas integration; `ng2-charts` `10.0.0` reserved for future optional integration).
+- **Primary Icon Library**: Font Awesome (`@fortawesome/angular-fontawesome` `~4.0.0`, `@fortawesome/fontawesome-svg-core` `^7.3.1`, `@fortawesome/free-solid-svg-icons` `^7.3.1`).
+- **Secondary Icon Library**: PrimeIcons (`primeicons` `^8.0.2`, optional & subordinate).
+- **Language**: TypeScript 5.9+ in strict mode (`"strict": true`) with configured path aliases (`@core/*`, `@shared/*`, `@layout/*`, `@features/*`, `@env/*`, `@styles/*`).
+- **Styling**: SCSS (`inlineStyleLanguage: "scss"`).
+- **Routing**: Angular Router with standalone route trees.
+- **Forms**: Strictly typed Reactive Forms (`@angular/forms`, template-driven forms prohibited).
+- **State & Reactivity**: Angular Signals (`signal`, `computed`, `effect`) & RxJS 7.8+.
+- **Server-Side Rendering (SSR)**: Explicitly disabled (client-side enterprise SPA).
+- **Package Manager**: `npm` with reproducible lockfile (`package-lock.json`).
 
 ---
 
-## 2. Angular Workspace Configuration (`angular.json`)
+## 2. Directory Architecture & Layer Responsibilities
 
-The workspace is configured using the official Angular CLI 21 conventions:
+The codebase follows a strictly decoupled, feature-based standalone architecture:
 
-- **Build Pipeline**: Employs `@angular/build:application` utilizing esbuild for production bundling and Vite for the local development server.
-- **Environment Replacements**: File replacement configuration separates development and production builds:
-  - Default / Production: `src/environments/environment.ts`
-  - Development: Replaced with `src/environments/environment.development.ts` via `fileReplacements`.
-- **Bundle Budgets**:
-  - Initial Bundle: `500kB` warning / `1MB` maximum error limit.
-  - Component Styles: `4kB` warning / `8kB` maximum error limit.
-  - *Headroom & Optimization Directive*: With the integration of PrimeNG theme runtime, PrimeIcons font mappings, and Bootstrap grid/utilities, the production initial bundle is currently **`498.40 kB`** (estimated transfer size `89.18 kB`), leaving approximately `1.6 kB` of initial budget headroom. The `500 kB` budget is intentionally preserved without artificial expansion. To maintain performance, all future feature modules must employ Angular route-level lazy loading (`loadChildren` / `loadComponent`) and strict selective component imports.
-- **Schematic Defaults**: Configured to generate SCSS stylesheets and disable automatic boilerplate test file creation (`skipTests: true`) across components, services, directives, and pipes.
-
----
-
-## 3. TypeScript & Compiler Safety Standards
-
-Strict typing is enforced across the workspace in `tsconfig.json` and `tsconfig.app.json`:
-
-- **Strict Flags**:
-  - `"strict": true` (Enables `noImplicitAny`, `strictNullChecks`, `strictFunctionTypes`, `strictBindCallApply`, `strictPropertyInitialization`, `noImplicitThis`, `alwaysStrict`)
-  - `"noImplicitOverride": true`
-  - `"noPropertyAccessFromIndexSignature": true`
-  - `"noImplicitReturns": true`
-  - `"noFallthroughCasesInSwitch": true`
-- **Angular Compiler Options**:
-  - `"strictTemplates": true` (Strict template type-checking)
-  - `"strictInjectionParameters": true`
-  - `"strictInputAccessModifiers": true`
-- **Prohibitions**:
-  - The use of `any` is strictly prohibited. All data structures, DTOs, and event payloads must be strictly typed.
-  - Path aliases are introduced only after architectural folder definitions are approved.
-
----
-
-## 4. Application Configuration & PrimeNG Setup
-
-Configured in `src/app/app.config.ts`:
-
-- Standalone bootstrap via `bootstrapApplication(App, appConfig)` without `NgModule`.
-- Global error listener: `provideBrowserGlobalErrorListeners()`.
-- Router provider: `provideRouter(routes)`.
-- PrimeNG integration: `providePrimeNG({ theme: { preset: Aura } })` using the official Aura theme preset from `@primeuix/themes/aura`.
-
----
-
-## 5. UI Component Library Standards — PrimeNG & PrimeUIX
-
-PrimeNG is the **primary enterprise UI component library** for the entire application.
-
-- **Version**: PrimeNG `21.1.10` with `@primeuix/themes` `2.0.3`.
-- **Theme Foundation**: Official `Aura` preset serves as the baseline theming foundation.
-- **Component Ownership**: All interactive enterprise UI elements (`p-button`, `p-table`, `p-dialog`, `p-select`, `p-tag`, `p-toast`, `p-card`, etc.) belong exclusively to PrimeNG.
-- **Standalone Imports**: PrimeNG components must be imported directly into the standalone components that consume them (e.g., `imports: [TableModule, ButtonModule]`). No monolithic shared UI modules.
-- **Future Custom Design System**: The initial `Aura` preset establishes the theme runtime. Custom enterprise branding tokens, palette overrides, and Light/Dark theme switching will be introduced during the dedicated Phase 1.1.4 UI/UX design system step.
-
----
-
-## 6. Layout & Grid Standards — Bootstrap 5 (Selective Usage)
-
-Bootstrap 5 is integrated **strictly for its responsive grid and layout utility system**.
-
-### 6.1 Approved Usage
-- Responsive container layouts (`.container`, `.container-fluid`).
-- Flexbox grid system (`.row`, `.col-*`, `.col-{sm|md|lg|xl}-*`).
-- Flex utility classes (`.d-flex`, `.align-items-center`, `.justify-content-between`, `.flex-column`, `.gap-*`).
-- Spacing utilities (`.m-*`, `.p-*`, `.mx-auto`, `.my-*`).
-
-### 6.2 Prohibited Usage
-- **Component Styles**: Bootstrap button (`.btn`), card (`.card`), form (`.form-control`), table (`.table`), modal (`.modal`), dropdown (`.dropdown`), or navigation (`.navbar`) styles are **strictly omitted** to prevent style collision with PrimeNG.
-- **JavaScript & jQuery**: Bootstrap JavaScript bundles and jQuery are **strictly prohibited**. All interactive UI behaviors are handled by Angular and PrimeNG.
-
----
-
-## 7. Charting Standards — Chart.js & ng2-charts Policy
-
-Chart rendering follows a mandatory direct Canvas architecture.
-
-### 7.1 Mandatory Native Canvas Architecture
 ```text
-Angular Standalone Component
-         │
-         ▼
-Native HTML <canvas #chartCanvas>
-         │
-         ▼
-Direct Chart.js API (new Chart(ctx, config))
-         │
-         ▼
-HTML5 2D Canvas-based Chart Rendering
+Frontend/src/app/
+│
+├── core/                                   # Application-wide singleton infrastructure
+│   ├── auth/                               # Authentication state, session handling, token lifecycle
+│   ├── guards/                             # Route protection & role/permission guards
+│   ├── interceptors/                       # HTTP interceptors (JWT attachment, error handling)
+│   ├── models/                             # Global application & user domain contracts
+│   ├── services/                           # Singleton cross-cutting services (logging, notification)
+│   └── theme/                              # PrimeNG custom theme preset and theme configuration
+│
+├── shared/                                 # Reusable, business-agnostic UI and utility artifacts
+│   ├── components/                         # Business-independent UI components (confirm dialog, empty state)
+│   ├── directives/                         # Reusable structural/attribute directives (permission masking)
+│   ├── models/                             # Shared contracts, pagination, and API envelopes
+│   ├── pipes/                              # Common transformation pipes (currency, date format)
+│   └── utils/                              # Pure functions, math helpers, and form validators
+│
+├── layout/                                 # Structural layout shells
+│   ├── public/                             # Public authentication layout
+│   │   ├── header/                         # Minimal public top-bar
+│   │   └── footer/                         # Public legal & copyright footer
+│   │
+│   └── private/                            # Authenticated enterprise layout
+│       ├── header/                         # Enterprise top navbar with notifications & user profile
+│       ├── sidebar/                        # Collapsible navigation drawer for the 10 business modules
+│       └── footer/                         # Authenticated application footer & version indicator
+│
+└── features/                               # Business modules (Public and Private areas)
+    ├── public/                             # Pre-authentication features
+    │   └── authentication/                 # Login, Forgot Password, Reset Password, MFA
+    │
+    └── private/                            # Post-authentication business modules (10 Approved Modules)
+        ├── user-management/                # Module 1: User & Role Administration
+        ├── dashboard/                      # Module 2: Executive Dashboard & Analytics
+        ├── projects/                       # Module 3: Project Planning & Delivery Tracking
+        ├── employees/                      # Module 4: Employee Directory & Profiles
+        ├── tasks/                          # Module 5: Task Management & Milestones
+        ├── invoices/                       # Module 6: Billing & Invoicing
+        ├── payments/                       # Module 7: Payment Tracking & Reconciliation
+        ├── reports/                        # Module 8: Financial & Operational Reports
+        ├── ai-assistant/                   # Module 9: AI Business Assistant & Insights
+        └── settings/                       # Module 10: Enterprise Application Settings
 ```
 
-### 7.2 Implementation Guidelines for Future Chart Components
-1. **Direct Canvas Access**: Access the native `<canvas>` element via Angular's `@ViewChild('chartCanvas', { static: false })`.
-2. **Lifecycle Discipline**: Initialize the Chart instance in `ngAfterViewInit()`.
-3. **Memory Leak Prevention**: Always invoke `chartInstance.destroy()` in `ngOnDestroy()`. Never leave active canvas listeners or dangling chart instances.
-4. **Data Updates**: Call `chartInstance.update()` upon data mutations rather than tearing down and reconstructing the entire chart.
-5. **Selective Registration (Tree-Shaking)**: Import and register only required Chart.js controllers, elements, scales, and plugins (`Chart.register(BarController, BarElement, CategoryScale, LinearScale)`). Avoid global registration of unused chart types.
-6. **No PrimeNG `p-chart`**: PrimeNG's chart wrapper directive is prohibited in favor of direct, performant Chart.js Canvas rendering.
-
-### 7.3 `ng2-charts` Installation Policy
-- `ng2-charts` version `10.0.0` is installed as an approved project dependency to preserve future Angular integration options.
-- In Phase 1.1.3, `ng2-charts` wrapper directives (`BaseChartDirective`) and components are **not used** for chart rendering. Direct Chart.js Canvas API remains the approved architectural standard.
+### Architectural Principles:
+1. **Public vs. Private Separation**: Public features and layouts are completely decoupled from Private authenticated modules.
+2. **Layout Independence**: Public and Private layouts have dedicated header and footer components. The sidebar component exists exclusively under `layout/private/sidebar/`.
+3. **No Monolithic Shared Modules**: Standalone components import only what they need. Barrel/index files and dummy placeholder files are omitted.
 
 ---
 
-## 8. Icon Library Standards
+## 3. Centralized Global Design System (`src/assets/styles/`)
 
-The application maintains a strict, consistent icon hierarchy:
+Design tokens are centralized under `src/assets/styles/` across 5 modular partials:
 
-### 8.1 Font Awesome — Primary Icon Library (First Priority)
-- **Status**: The standard, primary icon library for the entire application.
-- **Installed Packages**:
-  - `@fortawesome/angular-fontawesome`: `~4.0.0` (Official Angular 21 integration)
-  - `@fortawesome/fontawesome-svg-core`: `^7.3.1` (Core SVG engine)
-  - `@fortawesome/free-solid-svg-icons`: `^7.3.1` (Solid icon collection)
-- **Usage Standard**:
-  - Always prefer Font Awesome icons across all UI features and components.
-  - **Explicit Tree-Shaking**: Never import the entire icon library. Import only the specific icons required by the component:
-    ```typescript
-    import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-    import { faUser, faBuilding } from '@fortawesome/free-solid-svg-icons';
-
-    @Component({
-      standalone: true,
-      imports: [FontAwesomeModule],
-      template: `<fa-icon [icon]="faUser"></fa-icon>`
-    })
-    export class UserProfileComponent {
-      protected readonly faUser = faUser;
-    }
-    ```
-
-### 8.2 PrimeIcons — Secondary Icon Library (Optional & Subordinate)
-- **Status**: Subordinate, optional secondary icon library (`primeicons@^8.0.2`).
-- **Usage Standard**:
-  - Used only when a specific visual icon is not available in Font Awesome or when required by an integrated Prime component.
-  - Do not mix icon sets within the same visual context (e.g., within the same navigation bar or button group).
-  - Font Awesome always takes precedence.
+- **`_variables.scss`**: Compile-time SCSS tokens (breakpoints `$sm` through `$xxl`, container widths, font families, z-index layers, base spacing `$spacing-0` through `$spacing-10`, and transitions).
+- **`_themes.scss`**: Complete CSS Custom Properties (`--em-*`) for Light (default) and Dark themes.
+- **`_typography.scss`**: Heading hierarchy (`h1` through `h6`), body text, captions, and font-size tokens (`--em-font-size-xs` through `--em-font-size-4xl`).
+- **`_mixins.scss`**: Reusable mixins for responsive queries (`respond-to`, `respond-below`), flex helpers (`flex-center`, `flex-between`), surface elevation (`card-surface`, `elevated-surface`), focus rings, and custom scrollbars.
+- **`_utilities.scss`**: Reusable utility classes (`.em-bg-app`, `.em-surface-card`, `.em-surface-elevated`, `.em-container`, `.em-scrollable`, `.em-truncate`).
 
 ---
 
-## 9. Global SCSS Architecture & CSS Cascade Hierarchy
+## 4. Light and Dark Theme Architecture
 
-Configured in `src/styles.scss`:
+Theme switching operates via the `data-theme` attribute on the root element (`<html>` or `<body>`):
+
+- **Light Theme (Default)**: Declared via `:root, [data-theme='light']`.
+- **Dark Theme**: Declared via `[data-theme='dark']`.
+
+### Theme Token Hierarchy:
+```scss
+// Brand Colors
+--em-color-primary          // Primary enterprise brand blue (#2563eb Light / #3b82f6 Dark)
+--em-color-secondary        // Neutral secondary slate
+--em-color-accent           // Accent sky blue
+
+// Semantic Feedback
+--em-color-success          // Emerald green (#10b981 Light / #34d399 Dark)
+--em-color-warning          // Amber (#f59e0b Light / #fbbf24 Dark)
+--em-color-danger           // Rose red (#ef4444 Light / #f87171 Dark)
+--em-color-info             // Sky blue (#0284c7 Light / #38bdf8 Dark)
+
+// Surfaces & Backgrounds
+--em-bg-app                 // Root viewport background (#f8fafc Light / #0f172a Dark)
+--em-bg-surface             // General surface (#ffffff Light / #1e293b Dark)
+--em-bg-card                // Card & container surface
+--em-bg-sidebar             // Sidebar surface
+--em-bg-header              // Header surface
+
+// Text Colors
+--em-text-primary           // High-contrast primary text (#0f172a Light / #f8fafc Dark)
+--em-text-secondary         // Slate secondary text
+--em-text-muted             // Muted/placeholder text
+--em-text-disabled          // Inactive element text
+
+// Borders & Shadows
+--em-border-color           // Subtle divider and component borders
+--em-shadow-xs .. xl        // Depth scale calibrated for light and dark backgrounds
+--em-focus-ring             // Accessible 2-step keyboard focus ring
+```
+
+### Consuming Tokens in Components:
+Components must always reference semantic CSS variables rather than hardcoded colors:
+```scss
+.my-card {
+  background-color: var(--em-bg-card);
+  border: 1px solid var(--em-border-color);
+  color: var(--em-text-primary);
+  box-shadow: var(--em-shadow-sm);
+}
+```
+
+---
+
+## 5. PrimeNG Aura Semantic Preset Alignment
+
+PrimeNG's theming engine is formally aligned with the application design system via `definePreset` in `src/app/core/theme/prime-preset.ts`:
+
+```typescript
+import { definePreset } from '@primeuix/themes';
+import Aura from '@primeuix/themes/aura';
+
+export const EnterprisePreset = definePreset(Aura, {
+  semantic: {
+    primary: {
+      50: '{blue.50}',
+      // ... 100-900 ...
+      950: '{blue.950}',
+    },
+    colorScheme: {
+      light: {
+        surface: { 0: '#ffffff', 50: '{slate.50}', /* ... */ 950: '{slate.950}' },
+        primary: { color: '{blue.600}', contrastColor: '#ffffff', hoverColor: '{blue.700}', activeColor: '{blue.800}' },
+        text: { color: '{slate.900}', mutedColor: '{slate.500}' },
+        content: { background: '#ffffff', borderColor: '{slate.200}', color: '{slate.900}' },
+      },
+      dark: {
+        surface: { 0: '#ffffff', 50: '{slate.950}', /* ... */ 950: '{slate.50}' },
+        primary: { color: '{blue.500}', contrastColor: '#0f172a', hoverColor: '{blue.400}', activeColor: '{blue.600}' },
+        text: { color: '{slate.50}', mutedColor: '{slate.400}' },
+        content: { background: '{slate.800}', borderColor: '{slate.700}', color: '{slate.50}' },
+      },
+    },
+  },
+});
+```
+
+And configured in `src/app/app.config.ts`:
+```typescript
+import { EnterprisePreset } from '@core/theme/prime-preset';
+
+providePrimeNG({
+  theme: {
+    preset: EnterprisePreset,
+    options: {
+      darkModeSelector: '[data-theme="dark"]',
+    },
+  },
+})
+```
+
+### PrimeNG and Enterprise Token Relationship:
+- **Semantic Palette Alignment**: `definePreset` configures PrimeNG's internal semantic design tokens (`{blue.*}`, `{slate.*}`), which generates PrimeNG's `--p-*` CSS variables aligned with the enterprise color system.
+- **No Direct CSS Binding**: It does **not** create direct CSS custom property aliases (such as `--p-primary-color: var(--em-color-primary)`). Both token sets coexist harmoniously and synchronize through identical color definitions and selector triggers (`[data-theme="dark"]`).
+
+---
+
+## 6. TypeScript Path Aliases (`tsconfig.json`)
+
+To eliminate fragile relative import chains (`../../..`), the following aliases are active:
+
+| Alias | Target Path |
+| :--- | :--- |
+| `@core/*` | `src/app/core/*` |
+| `@shared/*` | `src/app/shared/*` |
+| `@layout/*` | `src/app/layout/*` |
+| `@features/*` | `src/app/features/*` |
+| `@env/*` | `src/environments/*` |
+
+---
+
+## 7. Global SCSS Cascade Hierarchy (`styles.scss`)
+
+The global stylesheet enforces a clean, deterministic cascade:
 
 ```scss
-// 1. PrimeIcons (Secondary Icon Library)
+// 1. SCSS Design System Partials (Compile-Time)
+@use 'assets/styles/variables' as *;
+@use 'assets/styles/mixins' as *;
+
+// 2. Global Themes & CSS Custom Properties (Runtime)
+@use 'assets/styles/themes';
+
+// 3. Typographic Cascade & Global Utilities
+@use 'assets/styles/typography';
+@use 'assets/styles/utilities';
+
+// 4. PrimeIcons (Secondary Icon Library)
 @use 'primeicons/primeicons.css';
 
-// 2. Bootstrap 5 (Selective Grid, Flex & Layout Utilities only)
-@use 'bootstrap/dist/css/bootstrap-grid.min.css';
-@use 'bootstrap/dist/css/bootstrap-utilities.min.css';
+// 5. Bootstrap 5 Modular Architecture (Grid, Flex, Spacing & Layout Utilities)
+// Note: Component styles (buttons, cards, forms, tables) and theme/color utilities
+// are strictly omitted to prevent CSS collision with PrimeNG and custom tokens.
+$include-column-box-sizing: true !default;
 
-// 3. Application Global Styles
+@import 'bootstrap/scss/functions';
+@import 'bootstrap/scss/variables';
+@import 'bootstrap/scss/variables-dark';
+@import 'bootstrap/scss/maps';
+
+@import 'bootstrap/scss/mixins/breakpoints';
+@import 'bootstrap/scss/mixins/container';
+@import 'bootstrap/scss/mixins/grid';
+@import 'bootstrap/scss/mixins/utilities';
+
+@import 'bootstrap/scss/vendor/rfs';
+
+@import 'bootstrap/scss/containers';
+@import 'bootstrap/scss/grid';
+
+@import 'bootstrap/scss/utilities';
+
+// Filter $utilities to strictly approved groups: Display, Order, Flex, Margin, Padding, Gap, Sizing, Overflow, Position
+$utilities: map-get-multiple(
+  $utilities,
+  (
+    'display',
+    'order', 'flex', 'flex-direction', 'flex-grow', 'flex-shrink', 'flex-wrap',
+    'justify-content', 'align-items', 'align-content', 'align-self',
+    'margin', 'margin-x', 'margin-y', 'margin-top', 'margin-end', 'margin-bottom', 'margin-start',
+    'negative-margin', 'negative-margin-x', 'negative-margin-y', 'negative-margin-top', 'negative-margin-end', 'negative-margin-bottom', 'negative-margin-start',
+    'padding', 'padding-x', 'padding-y', 'padding-top', 'padding-end', 'padding-bottom', 'padding-start',
+    'gap', 'row-gap', 'column-gap',
+    'width', 'max-width', 'viewport-width', 'min-viewport-width',
+    'height', 'max-height', 'viewport-height', 'min-viewport-height',
+    'overflow', 'overflow-x', 'overflow-y',
+    'position', 'top', 'bottom', 'start', 'end', 'translate-middle'
+  )
+);
+
+@import 'bootstrap/scss/utilities/api';
+
+// 6. Base Reset & Application Layout
 html,
 body {
   height: 100%;
   margin: 0;
   padding: 0;
+  background-color: var(--em-bg-app);
+  color: var(--em-text-primary);
+  font-family: var(--em-font-family-base, #{$font-family-sans});
+  font-size: 16px;
+  line-height: var(--em-line-height-normal, 1.5);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 ```
 
-### Cascade & Conflict Prevention:
-1. **PrimeNG Theme Runtime**: Dynamic design tokens and CSS variables injected via `providePrimeNG({ theme: { preset: Aura } })`.
-2. **PrimeIcons**: Font icon rules for optional secondary icons.
-3. **Bootstrap Grid & Utilities**: Pure utility classes (`container`, `row`, `col-*`, `d-flex`, spacing) scoped without overriding PrimeNG component styles.
-4. **Application Global Styles**: Root reset and application-wide baseline layout rules.
-
-> [!NOTE]
-> *Visual Conflict Verification Scope*: While the stylesheet configuration strictly eliminates component-level collisions by omitting Bootstrap buttons, cards, forms, and modals, actual visual presentation and component-level style harmony will be formally tested and verified during future UI component implementation phases.
-
 ---
 
-## 10. Environment Configuration Strategy
-
-Environment configurations are maintained under `src/environments/`:
-
-- **`src/environments/environment.ts`**: Production environment configuration.
-- **`src/environments/environment.development.ts`**: Local development environment configuration.
-
-### Security Directives
-- **Zero Secrets**: API keys, JWT secrets, passwords, and private tokens must **never** be stored in environment files or client-side code.
-- **API Base URLs**: Backend base URLs are externalized through `environment.apiBaseUrl`.
-
----
-
-## 11. Latest & Non-Deprecated Package Policy
-
-All developers and agents contributing to this frontend must follow this permanent package management standard:
-
-1. **Compatibility Verification**: Before installing or updating any package, verify its peer dependencies and compatibility with Angular 21. Blind usage of `@latest` without verification is prohibited (e.g., `@fortawesome/angular-fontawesome@4.x` was selected because `5.x` targets Angular 22; `primeng@21.1.10`, `ng2-charts@10.0.0`, and `@primeuix/themes@2.0.3` were selected to guarantee Angular 21 compatibility).
-2. **Zero Deprecated Dependencies**: Deprecated packages, APIs, or unmaintained libraries must never be introduced.
-3. **Reproducible Builds**: All installations must update `package.json` and `package-lock.json` consistently.
-4. **Security Audits & Risk Classification**:
-   - **Production Dependencies**: Must have **0 vulnerabilities**. Verified: Current production packages (`primeng`, `bootstrap`, `chart.js`, `ng2-charts`, Font Awesome, Angular core) contain zero vulnerabilities.
-   - **Development Tooling**: Transitive build-tooling advisories in local developer CLI utilities (`@angular/cli` -> `pacote` -> `glob` / `minimatch`) are documented and evaluated. The current 16 moderate advisories represent a previously evaluated and accepted risk within local dev tooling with zero runtime exposure.
-   - **Prohibition on Force**: Never execute `npm audit fix --force` as it causes breaking major framework upgrades to unapproved Angular releases (e.g., Angular 22). All vulnerabilities must be resolved via official, non-breaking minor/patch updates.
-
----
-
-## 12. Mandatory Angular Coding Standards
-
-### 12.1 Modern Control Flow Syntax
-All newly developed templates must exclusively use Angular's built-in Control Flow syntax:
-
-- `@if (condition) { ... } @else if (other) { ... } @else { ... }`
-- `@for (item of items; track item.id) { ... } @empty { ... }`
-- `@switch (value) { @case (val1) { ... } @default { ... } }`
-
-> [!IMPORTANT]
-> Legacy structural directives (`*ngIf`, `*ngFor`, `*ngSwitch`) are strictly prohibited in all newly authored templates. Every `@for` block must include a valid `track` expression.
-
-### 12.2 Component Spec File Policy
-- Do not automatically create `.spec.ts` files for every component, service, directive, or pipe.
-- CLI schematics are configured with `skipTests: true` by default.
-- Unit test files must be created intentionally when there is an explicit testing requirement or test scenario to implement.
-- Existing tests (such as `src/app/app.spec.ts`) are preserved.
-
----
-
-## 13. Development & Build Commands
+## 8. Development & Build Commands
 
 | Command | Description |
 | :--- | :--- |

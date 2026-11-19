@@ -1,0 +1,103 @@
+// -----------------------------------------------------------------------------
+// EnterpriseManagement Design System — Typography
+// -----------------------------------------------------------------------------
+
+@use 'variables' as *;
+
+// 1. Typographic CSS Custom Properties
+:root {
+  --em-font-family-base: #{$font-family-sans};
+  --em-font-family-mono: #{$font-family-mono};
+
+  // Font Sizes
+  --em-font-size-xs: 0.75rem;    // 12px
+  --em-font-size-sm: 0.875rem;   // 14px
+  --em-font-size-base: 1rem;     // 16px
+  --em-font-size-lg: 1.125rem;   // 18px
+  --em-font-size-xl: 1.25rem;    // 20px
+  --em-font-size-2xl: 1.5rem;    // 24px
+  --em-font-size-3xl: 1.875rem;  // 30px
+  --em-font-size-4xl: 2.25rem;   // 36px
+
+  // Font Weights
+  --em-font-weight-regular: 400;
+  --em-font-weight-medium: 500;
+  --em-font-weight-semibold: 600;
+  --em-font-weight-bold: 700;
+
+  // Line Heights
+  --em-line-height-tight: 1.25;
+  --em-line-height-snug: 1.375;
+  --em-line-height-normal: 1.5;
+  --em-line-height-relaxed: 1.625;
+}
+
+// 2. Heading Hierarchy
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-weight: var(--em-font-weight-semibold);
+  line-height: var(--em-line-height-tight);
+  color: var(--em-text-primary);
+  letter-spacing: -0.015em;
+}
+
+h1 {
+  font-size: var(--em-font-size-4xl);
+  font-weight: var(--em-font-weight-bold);
+}
+
+h2 {
+  font-size: var(--em-font-size-3xl);
+}
+
+h3 {
+  font-size: var(--em-font-size-2xl);
+}
+
+h4 {
+  font-size: var(--em-font-size-xl);
+}
+
+h5 {
+  font-size: var(--em-font-size-lg);
+}
+
+h6 {
+  font-size: var(--em-font-size-base);
+}
+
+// 3. Body Text & Paragraphs
+p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  line-height: var(--em-line-height-normal);
+  color: var(--em-text-primary);
+}
+
+// 4. Captions & Utilities
+small,
+.em-text-caption {
+  font-size: var(--em-font-size-xs);
+  line-height: var(--em-line-height-normal);
+  color: var(--em-text-muted);
+}
+
+.em-text-lead {
+  font-size: var(--em-font-size-lg);
+  font-weight: var(--em-font-weight-regular);
+  line-height: var(--em-line-height-relaxed);
+  color: var(--em-text-secondary);
+}
+
+code,
+pre,
+kbd {
+  font-family: var(--em-font-family-mono);
+  font-size: var(--em-font-size-sm);
+}
