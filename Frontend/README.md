@@ -74,6 +74,7 @@ Frontend/src/app/
 ```
 
 ### Architectural Principles:
+
 1. **Public vs. Private Separation**: Public features and layouts are completely decoupled from Private authenticated modules.
 2. **Layout Independence**: Public and Private layouts have dedicated header and footer components. The sidebar component exists exclusively under `layout/private/sidebar/`.
 3. **No Monolithic Shared Modules**: Standalone components import only what they need. Barrel/index files and dummy placeholder files are omitted.
@@ -100,6 +101,7 @@ Theme switching operates via the `data-theme` attribute on the root element (`<h
 - **Dark Theme**: Declared via `[data-theme='dark']`.
 
 ### Theme Token Hierarchy:
+
 ```scss
 // Brand Colors
 --em-color-primary          // Primary enterprise brand blue (#2563eb Light / #3b82f6 Dark)
@@ -132,7 +134,9 @@ Theme switching operates via the `data-theme` attribute on the root element (`<h
 ```
 
 ### Consuming Tokens in Components:
+
 Components must always reference semantic CSS variables rather than hardcoded colors:
+
 ```scss
 .my-card {
   background-color: var(--em-bg-card);
@@ -162,13 +166,23 @@ export const EnterprisePreset = definePreset(Aura, {
     colorScheme: {
       light: {
         surface: { 0: '#ffffff', 50: '{slate.50}', /* ... */ 950: '{slate.950}' },
-        primary: { color: '{blue.600}', contrastColor: '#ffffff', hoverColor: '{blue.700}', activeColor: '{blue.800}' },
+        primary: {
+          color: '{blue.600}',
+          contrastColor: '#ffffff',
+          hoverColor: '{blue.700}',
+          activeColor: '{blue.800}',
+        },
         text: { color: '{slate.900}', mutedColor: '{slate.500}' },
         content: { background: '#ffffff', borderColor: '{slate.200}', color: '{slate.900}' },
       },
       dark: {
         surface: { 0: '#ffffff', 50: '{slate.950}', /* ... */ 950: '{slate.50}' },
-        primary: { color: '{blue.500}', contrastColor: '#0f172a', hoverColor: '{blue.400}', activeColor: '{blue.600}' },
+        primary: {
+          color: '{blue.500}',
+          contrastColor: '#0f172a',
+          hoverColor: '{blue.400}',
+          activeColor: '{blue.600}',
+        },
         text: { color: '{slate.50}', mutedColor: '{slate.400}' },
         content: { background: '{slate.800}', borderColor: '{slate.700}', color: '{slate.50}' },
       },
@@ -178,6 +192,7 @@ export const EnterprisePreset = definePreset(Aura, {
 ```
 
 And configured in `src/app/app.config.ts`:
+
 ```typescript
 import { EnterprisePreset } from '@core/theme/prime-preset';
 
@@ -188,10 +203,11 @@ providePrimeNG({
       darkModeSelector: '[data-theme="dark"]',
     },
   },
-})
+});
 ```
 
 ### PrimeNG and Enterprise Token Relationship:
+
 - **Semantic Palette Alignment**: `definePreset` configures PrimeNG's internal semantic design tokens (`{blue.*}`, `{slate.*}`), which generates PrimeNG's `--p-*` CSS variables aligned with the enterprise color system.
 - **No Direct CSS Binding**: It does **not** create direct CSS custom property aliases (such as `--p-primary-color: var(--em-color-primary)`). Both token sets coexist harmoniously and synchronize through identical color definitions and selector triggers (`[data-theme="dark"]`).
 
@@ -201,13 +217,13 @@ providePrimeNG({
 
 To eliminate fragile relative import chains (`../../..`), the following aliases are active:
 
-| Alias | Target Path |
-| :--- | :--- |
-| `@core/*` | `src/app/core/*` |
-| `@shared/*` | `src/app/shared/*` |
-| `@layout/*` | `src/app/layout/*` |
+| Alias         | Target Path          |
+| :------------ | :------------------- |
+| `@core/*`     | `src/app/core/*`     |
+| `@shared/*`   | `src/app/shared/*`   |
+| `@layout/*`   | `src/app/layout/*`   |
 | `@features/*` | `src/app/features/*` |
-| `@env/*` | `src/environments/*` |
+| `@env/*`      | `src/environments/*` |
 
 ---
 
@@ -257,16 +273,57 @@ $utilities: map-get-multiple(
   $utilities,
   (
     'display',
-    'order', 'flex', 'flex-direction', 'flex-grow', 'flex-shrink', 'flex-wrap',
-    'justify-content', 'align-items', 'align-content', 'align-self',
-    'margin', 'margin-x', 'margin-y', 'margin-top', 'margin-end', 'margin-bottom', 'margin-start',
-    'negative-margin', 'negative-margin-x', 'negative-margin-y', 'negative-margin-top', 'negative-margin-end', 'negative-margin-bottom', 'negative-margin-start',
-    'padding', 'padding-x', 'padding-y', 'padding-top', 'padding-end', 'padding-bottom', 'padding-start',
-    'gap', 'row-gap', 'column-gap',
-    'width', 'max-width', 'viewport-width', 'min-viewport-width',
-    'height', 'max-height', 'viewport-height', 'min-viewport-height',
-    'overflow', 'overflow-x', 'overflow-y',
-    'position', 'top', 'bottom', 'start', 'end', 'translate-middle'
+    'order',
+    'flex',
+    'flex-direction',
+    'flex-grow',
+    'flex-shrink',
+    'flex-wrap',
+    'justify-content',
+    'align-items',
+    'align-content',
+    'align-self',
+    'margin',
+    'margin-x',
+    'margin-y',
+    'margin-top',
+    'margin-end',
+    'margin-bottom',
+    'margin-start',
+    'negative-margin',
+    'negative-margin-x',
+    'negative-margin-y',
+    'negative-margin-top',
+    'negative-margin-end',
+    'negative-margin-bottom',
+    'negative-margin-start',
+    'padding',
+    'padding-x',
+    'padding-y',
+    'padding-top',
+    'padding-end',
+    'padding-bottom',
+    'padding-start',
+    'gap',
+    'row-gap',
+    'column-gap',
+    'width',
+    'max-width',
+    'viewport-width',
+    'min-viewport-width',
+    'height',
+    'max-height',
+    'viewport-height',
+    'min-viewport-height',
+    'overflow',
+    'overflow-x',
+    'overflow-y',
+    'position',
+    'top',
+    'bottom',
+    'start',
+    'end',
+    'translate-middle'
   )
 );
 
@@ -298,10 +355,48 @@ body {
 
 ## 8. Development & Build Commands
 
-| Command | Description |
-| :--- | :--- |
-| `npm start` or `ng serve` | Runs the local development server at `http://localhost:4200/` with live reload. |
-| `npm run build:dev` | Compiles a development build with source maps and development environment replacement. |
-| `npm run build` | Compiles an optimized, tree-shaken production build into `dist/EnterpriseManagement/`. |
-| `npx ng test --watch false` | Executes unit tests once using the Vitest test runner. |
-| `npm test` | Starts the Vitest unit test runner in interactive/watch mode. |
+| Command                     | Description                                                                            |
+| :-------------------------- | :------------------------------------------------------------------------------------- |
+| `npm start` or `ng serve`   | Runs the local development server at `http://localhost:4200/` with live reload.        |
+| `npm run build:dev`         | Compiles a development build with source maps and development environment replacement. |
+| `npm run build`             | Compiles an optimized, tree-shaken production build into `dist/EnterpriseManagement/`. |
+| `npm run lint`              | Executes ESLint across all TypeScript and Angular template files.                      |
+| `npm run lint:fix`          | Automatically fixes auto-fixable ESLint issues.                                        |
+| `npm run format:check`      | Verifies code formatting across the project without modifying files.                   |
+| `npm run format`            | Applies Prettier formatting across all supported source files.                         |
+| `npx ng test --watch false` | Executes unit tests once using the Vitest test runner.                                 |
+| `npm test`                  | Starts the Vitest unit test runner in interactive/watch mode.                          |
+
+---
+
+## 9. Code Quality, Linting & Formatting Architecture
+
+### 9.1 Tooling & Versions
+
+- **ESLint**: `^9.39.5` with ESLint Flat Configuration (`eslint.config.js`).
+- **Angular ESLint**: `21.4.0` (`@angular-eslint/builder`, `@angular-eslint/eslint-plugin`, `@angular-eslint/eslint-plugin-template`, `@angular-eslint/template-parser`).
+- **TypeScript ESLint**: `^8.73.0` (`typescript-eslint`).
+- **Prettier**: `^3.10.1` (`.prettierrc.json`, `.prettierignore`).
+- **ESLint & Prettier Integration**: `eslint-config-prettier@^10.1.8` (disables all conflicting formatting rules in ESLint).
+
+### 9.2 Mandatory Code Quality Standards
+
+1. **Modern Built-in Control Flow (Enforced via `@angular-eslint/template/prefer-control-flow`)**:
+   - All Angular templates must strictly use modern control-flow blocks: `@if`, `@else`, `@for`, `@empty`, `@switch`, `@case`.
+   - `npm run lint` detects and reports violations of `@angular-eslint/template/prefer-control-flow`. Legacy `*ngIf`, `*ngFor`, and `*ngSwitch` usage will fail the applicable lint check.
+   - Note: Angular build commands (`ng build`, `npm run build`) do not automatically execute ESLint unless explicitly integrated into the build or CI pipeline. Developers must run `npm run lint` to verify template compliance.
+2. **Typed Reactive Forms Mandatory**:
+   - All enterprise forms must utilize strictly typed Angular Reactive Forms (`FormGroup`, `FormControl`, `FormArray`).
+   - Template-driven forms (`[(ngModel)]`, `ngForm`) are forbidden.
+3. **Explicit Type Safety & Naming Conventions**:
+   - Explicit `any` is prohibited (`@typescript-eslint/no-explicit-any`).
+   - Unused variables are rejected (`@typescript-eslint/no-unused-vars`).
+   - Component selectors follow `app-kebab-case` and directive selectors follow `appCamelCase`.
+   - Component classes must use the `Component` suffix (root `App` allowed).
+
+### 9.3 Recommended Developer Workflow
+
+1. Author feature code following typed Reactive Forms and modern Angular control flow.
+2. Run `npm run lint` to verify TypeScript and template compliance.
+3. Run `npm run format:check` or `npm run format` to ensure uniform code style.
+4. Run `npm test` and `npm run build` before pushing changes.

@@ -3,40 +3,40 @@
 // -----------------------------------------------------------------------------
 
 // 1. SCSS Design System Partials (Compile-Time)
-@use 'assets/styles/variables' as *;
-@use 'assets/styles/mixins' as *;
+@use "assets/styles/variables" as *;
+@use "assets/styles/mixins" as *;
 
 // 2. Global Themes & CSS Custom Properties (Runtime)
-@use 'assets/styles/themes';
+@use "assets/styles/themes";
 
 // 3. Typographic Cascade & Global Utilities
-@use 'assets/styles/typography';
-@use 'assets/styles/utilities';
+@use "assets/styles/typography";
+@use "assets/styles/utilities";
 
 // 4. PrimeIcons (Secondary Icon Library)
-@use 'primeicons/primeicons.css';
+@use "primeicons/primeicons.css";
 
 // 5. Bootstrap 5 Modular Architecture (Grid, Flex, Spacing & Layout Utilities)
 // Note: Component styles (buttons, cards, forms, tables) and theme/color utilities
 // are strictly omitted to prevent CSS collision with PrimeNG and custom tokens.
 $include-column-box-sizing: true !default;
 
-@import 'bootstrap/scss/functions';
-@import 'bootstrap/scss/variables';
-@import 'bootstrap/scss/variables-dark';
-@import 'bootstrap/scss/maps';
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/variables-dark";
+@import "bootstrap/scss/maps";
 
-@import 'bootstrap/scss/mixins/breakpoints';
-@import 'bootstrap/scss/mixins/container';
-@import 'bootstrap/scss/mixins/grid';
-@import 'bootstrap/scss/mixins/utilities';
+@import "bootstrap/scss/mixins/breakpoints";
+@import "bootstrap/scss/mixins/container";
+@import "bootstrap/scss/mixins/grid";
+@import "bootstrap/scss/mixins/utilities";
 
-@import 'bootstrap/scss/vendor/rfs';
+@import "bootstrap/scss/vendor/rfs";
 
-@import 'bootstrap/scss/containers';
-@import 'bootstrap/scss/grid';
+@import "bootstrap/scss/containers";
+@import "bootstrap/scss/grid";
 
-@import 'bootstrap/scss/utilities';
+@import "bootstrap/scss/utilities";
 
 // Configure $utilities using Bootstrap's map-get-multiple API
 // Strictly includes: Display, Order, Flex, Margin, Padding, Gap, Sizing, Overflow, Position
@@ -44,74 +44,69 @@ $utilities: map-get-multiple(
   $utilities,
   (
     // Display utilities (responsive)
-    'display',
+    "display",
 
     // Order & Flexbox utilities (responsive)
-    'order',
-    'flex',
-    'flex-direction',
-    'flex-grow',
-    'flex-shrink',
-    'flex-wrap',
-    'justify-content',
-    'align-items',
-    'align-content',
-    'align-self',
-
+    "order",
+    "flex",
+    "flex-direction",
+    "flex-grow",
+    "flex-shrink",
+    "flex-wrap",
+    "justify-content",
+    "align-items",
+    "align-content",
+    "align-self",
     // Spacing — Margin utilities (responsive)
-    'margin',
-    'margin-x',
-    'margin-y',
-    'margin-top',
-    'margin-end',
-    'margin-bottom',
-    'margin-start',
-    'negative-margin',
-    'negative-margin-x',
-    'negative-margin-y',
-    'negative-margin-top',
-    'negative-margin-end',
-    'negative-margin-bottom',
-    'negative-margin-start',
-
+    "margin",
+    "margin-x",
+    "margin-y",
+    "margin-top",
+    "margin-end",
+    "margin-bottom",
+    "margin-start",
+    "negative-margin",
+    "negative-margin-x",
+    "negative-margin-y",
+    "negative-margin-top",
+    "negative-margin-end",
+    "negative-margin-bottom",
+    "negative-margin-start",
     // Spacing — Padding utilities (responsive)
-    'padding',
-    'padding-x',
-    'padding-y',
-    'padding-top',
-    'padding-end',
-    'padding-bottom',
-    'padding-start',
-
+    "padding",
+    "padding-x",
+    "padding-y",
+    "padding-top",
+    "padding-end",
+    "padding-bottom",
+    "padding-start",
     // Spacing — Gap utilities (responsive)
-    'gap',
-    'row-gap',
-    'column-gap',
-
+    "gap",
+    "row-gap",
+    "column-gap",
     // Approved Layout — Sizing utilities
-    'width',
-    'max-width',
-    'viewport-width',
-    'min-viewport-width',
-    'height',
-    'max-height',
-    'viewport-height',
-    'min-viewport-height',
-
+    "width",
+    "max-width",
+    "viewport-width",
+    "min-viewport-width",
+    "height",
+    "max-height",
+    "viewport-height",
+    "min-viewport-height",
     // Approved Layout — Overflow & Position utilities
-    'overflow',
-    'overflow-x',
-    'overflow-y',
-    'position',
-    'top',
-    'bottom',
-    'start',
-    'end',
-    'translate-middle'
+    "overflow",
+    "overflow-x",
+    "overflow-y",
+    "position",
+    "top",
+    "bottom",
+    "start",
+    "end",
+    "translate-middle"
   )
 );
 
-@import 'bootstrap/scss/utilities/api';
+@import "bootstrap/scss/utilities/api";
 
 // 6. Base Reset & Application Layout
 html,

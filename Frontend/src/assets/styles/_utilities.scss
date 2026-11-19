@@ -2,8 +2,8 @@
 // EnterpriseManagement Design System — Utilities
 // -----------------------------------------------------------------------------
 
-@use 'variables' as *;
-@use 'mixins' as *;
+@use "variables" as *;
+@use "mixins" as *;
 
 // 1. Core Surfaces
 .em-bg-app {
@@ -51,7 +51,7 @@
   padding-left: $spacing-4;
   padding-right: $spacing-4;
 
-  @include respond-to('md') {
+  @include respond-to("md") {
     padding-left: $spacing-6;
     padding-right: $spacing-6;
   }

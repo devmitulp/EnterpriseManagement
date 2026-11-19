@@ -1,0 +1,17 @@
+# Build and distribution directories
+dist/
+out-tsc/
+.angular/
+coverage/
+
+# Dependency directories and lockfiles
+node_modules/
+package-lock.json
+
+# Static public assets
+public/
+
+# Logs and environment cache
+*.log
+.DS_Store
+Thumbs.db

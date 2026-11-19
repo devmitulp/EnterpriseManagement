@@ -2,38 +2,62 @@
 // EnterpriseManagement Design System — Mixins
 // -----------------------------------------------------------------------------
 
-@use 'variables' as *;
+@use "variables" as *;
 
 // 1. Responsive Media Queries
 @mixin respond-to($breakpoint) {
-  @if $breakpoint == 'sm' {
-    @media (min-width: $breakpoint-sm) { @content; }
-  } @else if $breakpoint == 'md' {
-    @media (min-width: $breakpoint-md) { @content; }
-  } @else if $breakpoint == 'lg' {
-    @media (min-width: $breakpoint-lg) { @content; }
-  } @else if $breakpoint == 'xl' {
-    @media (min-width: $breakpoint-xl) { @content; }
-  } @else if $breakpoint == 'xxl' {
-    @media (min-width: $breakpoint-xxl) { @content; }
+  @if $breakpoint == "sm" {
+    @media (min-width: $breakpoint-sm) {
+      @content;
+    }
+  } @else if $breakpoint == "md" {
+    @media (min-width: $breakpoint-md) {
+      @content;
+    }
+  } @else if $breakpoint == "lg" {
+    @media (min-width: $breakpoint-lg) {
+      @content;
+    }
+  } @else if $breakpoint == "xl" {
+    @media (min-width: $breakpoint-xl) {
+      @content;
+    }
+  } @else if $breakpoint == "xxl" {
+    @media (min-width: $breakpoint-xxl) {
+      @content;
+    }
   } @else {
-    @media (min-width: $breakpoint) { @content; }
+    @media (min-width: $breakpoint) {
+      @content;
+    }
   }
 }
 
 @mixin respond-below($breakpoint) {
-  @if $breakpoint == 'sm' {
-    @media (max-width: ($breakpoint-sm - 0.02px)) { @content; }
-  } @else if $breakpoint == 'md' {
-    @media (max-width: ($breakpoint-md - 0.02px)) { @content; }
-  } @else if $breakpoint == 'lg' {
-    @media (max-width: ($breakpoint-lg - 0.02px)) { @content; }
-  } @else if $breakpoint == 'xl' {
-    @media (max-width: ($breakpoint-xl - 0.02px)) { @content; }
-  } @else if $breakpoint == 'xxl' {
-    @media (max-width: ($breakpoint-xxl - 0.02px)) { @content; }
+  @if $breakpoint == "sm" {
+    @media (max-width: ($breakpoint-sm - 0.02px)) {
+      @content;
+    }
+  } @else if $breakpoint == "md" {
+    @media (max-width: ($breakpoint-md - 0.02px)) {
+      @content;
+    }
+  } @else if $breakpoint == "lg" {
+    @media (max-width: ($breakpoint-lg - 0.02px)) {
+      @content;
+    }
+  } @else if $breakpoint == "xl" {
+    @media (max-width: ($breakpoint-xl - 0.02px)) {
+      @content;
+    }
+  } @else if $breakpoint == "xxl" {
+    @media (max-width: ($breakpoint-xxl - 0.02px)) {
+      @content;
+    }
   } @else {
-    @media (max-width: $breakpoint) { @content; }
+    @media (max-width: $breakpoint) {
+      @content;
+    }
   }
 }
 
@@ -61,7 +85,9 @@
   border: 1px solid var(--em-border-color);
   border-radius: $radius-lg;
   box-shadow: var(--em-shadow-sm);
-  transition: box-shadow $transition-fast, border-color $transition-fast;
+  transition:
+    box-shadow $transition-fast,
+    border-color $transition-fast;
 }
 
 @mixin elevated-surface {

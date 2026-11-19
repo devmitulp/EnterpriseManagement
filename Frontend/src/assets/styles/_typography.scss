@@ -2,7 +2,7 @@
 // EnterpriseManagement Design System — Typography
 // -----------------------------------------------------------------------------
 
-@use 'variables' as *;
+@use "variables" as *;
 
 // 1. Typographic CSS Custom Properties
 :root {
@@ -10,14 +10,14 @@
   --em-font-family-mono: #{$font-family-mono};
 
   // Font Sizes
-  --em-font-size-xs: 0.75rem;    // 12px
-  --em-font-size-sm: 0.875rem;   // 14px
-  --em-font-size-base: 1rem;     // 16px
-  --em-font-size-lg: 1.125rem;   // 18px
-  --em-font-size-xl: 1.25rem;    // 20px
-  --em-font-size-2xl: 1.5rem;    // 24px
-  --em-font-size-3xl: 1.875rem;  // 30px
-  --em-font-size-4xl: 2.25rem;   // 36px
+  --em-font-size-xs: 0.75rem; // 12px
+  --em-font-size-sm: 0.875rem; // 14px
+  --em-font-size-base: 1rem; // 16px
+  --em-font-size-lg: 1.125rem; // 18px
+  --em-font-size-xl: 1.25rem; // 20px
+  --em-font-size-2xl: 1.5rem; // 24px
+  --em-font-size-3xl: 1.875rem; // 30px
+  --em-font-size-4xl: 2.25rem; // 36px
 
   // Font Weights
   --em-font-weight-regular: 400;
